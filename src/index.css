@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+main {
+	min-height: calc(100vh - 3.625rem);
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover,
+a:focus-visible {
+	text-decoration: underline;
+}
+
+input[type='checkbox'] {
+	cursor: pointer;
+}
+
+.grid-cols-16 {
+	grid-template-columns: repeat(16, minmax(0, 1fr));
+}
+
+.VisualDisplay {
+	min-height: 14rem;
+}
