@@ -17,11 +17,12 @@ function Cymbals({ cymbals, setCymbals }: CymbalsProps) {
 	}
 
 	return (
-		<div className='Cymbals grid grid-cols-16 py-4'>
+		<div className='Cymbals grid grid-cols-8 py-4 sm:grid-cols-16'>
 			{cymbals.map((count, i) =>
 				count.map((division, j) => (
 					<input
 						type='checkbox'
+						className='Cymbal'
 						checked={division}
 						key={`cymbal-${i}-${getSubdivision(j)}`}
 						title={`Cymbal: ${i + 1}${getSubdivision(j)}`}

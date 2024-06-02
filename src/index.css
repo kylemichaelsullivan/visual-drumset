@@ -26,3 +26,23 @@ input[type='checkbox'] {
 .VisualDisplay {
 	min-height: 14rem;
 }
+
+.VisualDisplay .Counts .Count:nth-of-type(even),
+.VisualDisplay .Cymbals .Cymbal:nth-of-type(even),
+.VisualDisplay .Snares .Snare:nth-of-type(even),
+.VisualDisplay .Kicks .Kick:nth-of-type(even) {
+	display: none;
+}
+
+@media (min-width: 640px) {
+	.sm\:grid-cols-16 {
+		grid-template-columns: repeat(16, minmax(0, 1fr));
+	}
+
+	.VisualDisplay .Counts .Count:nth-of-type(even),
+	.VisualDisplay .Cymbals .Cymbal:nth-of-type(even),
+	.VisualDisplay .Snares .Snare:nth-of-type(even),
+	.VisualDisplay .Kicks .Kick:nth-of-type(even) {
+		display: block;
+	}
+}

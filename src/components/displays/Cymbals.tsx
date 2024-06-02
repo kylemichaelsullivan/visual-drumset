@@ -11,11 +11,11 @@ type CymbalsProps = {
 
 function Cymbals({ cymbals }: CymbalsProps) {
 	return (
-		<div className='Cymbals grid grid-cols-16'>
+		<div className='Cymbals grid grid-cols-8 sm:grid-cols-16'>
 			{cymbals.map((count, i) =>
 				count.map((division, j) => (
 					<div
-						className={`${getBackgroundClass(
+						className={`Cymbal ${getBackgroundClass(
 							j
 						)} text-yellow-400 text-center py-2`}
 						key={`${i}-${getSubdivision(j)}`}

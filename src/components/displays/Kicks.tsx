@@ -11,11 +11,13 @@ type KicksProps = {
 
 function Kicks({ kicks }: KicksProps) {
 	return (
-		<div className='Kicks grid grid-cols-16'>
+		<div className='Kicks grid grid-cols-8 sm:grid-cols-16'>
 			{kicks.map((count, i) =>
 				count.map((division, j) => (
 					<div
-						className={`${getBackgroundClass(j)} text-red-700 text-center py-2`}
+						className={`Kick ${getBackgroundClass(
+							j
+						)} text-red-700 text-center py-2`}
 						key={`${i}-${getSubdivision(j)}`}
 					>
 						{division && <FontAwesomeIcon icon={faKick} />}

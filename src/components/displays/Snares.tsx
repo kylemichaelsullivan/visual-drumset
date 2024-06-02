@@ -11,11 +11,11 @@ type SnaresProps = {
 
 function Snares({ snares }: SnaresProps) {
 	return (
-		<div className='Snares grid grid-cols-16'>
+		<div className='Snares grid grid-cols-8 sm:grid-cols-16'>
 			{snares.map((count, i) =>
 				count.map((division, j) => (
 					<div
-						className={`${getBackgroundClass(
+						className={`Snare ${getBackgroundClass(
 							j
 						)} text-yellow-900 text-center py-2`}
 						key={`${i}-${getSubdivision(j)}`}

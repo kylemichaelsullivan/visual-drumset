@@ -17,11 +17,12 @@ function Snares({ snares, setSnares }: SnaresProps) {
 	}
 
 	return (
-		<div className='snares grid grid-cols-16 py-4'>
+		<div className='Snares grid grid-cols-8 py-4 sm:grid-cols-16'>
 			{snares.map((count, i) =>
 				count.map((division, j) => (
 					<input
 						type='checkbox'
+						className='Snare'
 						checked={division}
 						key={`snare-${i}-${getSubdivision(j)}`}
 						title={`Snare: ${i + 1}${getSubdivision(j)}`}

@@ -17,11 +17,12 @@ function EditBeat({ kicks, setKicks }: EditBeatProps) {
 	}
 
 	return (
-		<div className='kicks grid grid-cols-16 py-4'>
+		<div className='Kicks grid grid-cols-8 py-4 sm:grid-cols-16'>
 			{kicks.map((count, i) =>
 				count.map((division, j) => (
 					<input
 						type='checkbox'
+						className='Kick'
 						checked={division}
 						key={`kick-${i}${getSubdivision(j)}`}
 						title={`Kick: ${i + 1}${getSubdivision(j)}`}
