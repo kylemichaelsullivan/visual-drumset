@@ -16,6 +16,7 @@ function Tempo({ bpm, setBpm }: TempoProps) {
 				min={min}
 				max={max}
 				step={step}
+				title='Set Tempo'
 				value={bpm}
 				onChange={(e) => setBpm(Number.parseInt(e.target.value))}
 			/>
@@ -25,6 +26,7 @@ function Tempo({ bpm, setBpm }: TempoProps) {
 				min={min}
 				max={max}
 				step={step}
+				title='Set Tempo'
 				value={bpm}
 				onChange={(e) => setBpm(Number.parseInt(e.target.value))}
 			/>
