@@ -9,7 +9,7 @@ function Tempo({ bpm, setBpm }: TempoProps) {
 	const step = 5;
 
 	return (
-		<div className='Tempo flex flex-col gap-2 items-center w-full sm:flex-row'>
+		<div className='Tempo flex gap-2 items-center w-full'>
 			<input
 				type='range'
 				className='cursor-pointer flex-auto'
