@@ -22,7 +22,7 @@ function Tempo({ bpm, setBpm }: TempoProps) {
 			/>
 			<input
 				type='number'
-				className='w-14'
+				className='border w-14 p-1'
 				min={min}
 				max={max}
 				step={step}
