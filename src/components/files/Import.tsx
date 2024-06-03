@@ -4,6 +4,11 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
+import { z } from 'zod';
+
+const countSchema = z.array(z.boolean()).length(4);
+const countsSchema = z.array(countSchema).length(4);
+
 type ImportProps = {
 	setCymbals: React.Dispatch<React.SetStateAction<counts>>;
 	setSnares: React.Dispatch<React.SetStateAction<counts>>;
@@ -26,6 +31,16 @@ function Import({ setCymbals, setSnares, setKicks }: ImportProps) {
 				if (e.target) {
 					const jsonObj = JSON.parse(e.target.result as string);
 					const { cymbals, snares, kicks } = jsonObj;
+
+					try {
+						countsSchema.parse(cymbals);
+						countsSchema.parse(snares);
+						countsSchema.parse(kicks);
+					} catch (error) {
+						alert('Invalid data. Please check the file and try again.');
+						console.error(error);
+						return;
+					}
 
 					setCymbals(() => cymbals);
 					setSnares(() => snares);
@@ -56,8 +71,10 @@ function Import({ setCymbals, setSnares, setKicks }: ImportProps) {
 				<span>Import</span>
 				<FontAwesomeIcon icon={faUpload} />
 			</button>
+
 			<input
 				type='file'
+				className='cursor-pointer'
 				accept='.json'
 				onChange={handleImport}
 				id='file-upload'
