@@ -25,10 +25,7 @@ function Import({ setCymbals, setSnares, setKicks }: ImportProps) {
 			reader.onload = (e) => {
 				if (e.target) {
 					const jsonObj = JSON.parse(e.target.result as string);
-
-					const cymbals = jsonObj.cymbals;
-					const snares = jsonObj.snares;
-					const kicks = jsonObj.kicks;
+					const { cymbals, snares, kicks } = jsonObj;
 
 					setCymbals(() => cymbals);
 					setSnares(() => snares);
