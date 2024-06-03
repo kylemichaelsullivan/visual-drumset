@@ -1,13 +1,10 @@
-import type { counts } from '../../types/counts';
-
 import { useState } from 'react';
+
+import type { counts } from '../../types/counts';
+import { isBeatValid } from './Zod';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
-
-import { z } from 'zod';
-
-const countSchema = z.array(z.boolean()).length(4);
-const countsSchema = z.array(countSchema).length(4);
 
 type ImportProps = {
 	setCymbals: React.Dispatch<React.SetStateAction<counts>>;
@@ -32,13 +29,7 @@ function Import({ setCymbals, setSnares, setKicks }: ImportProps) {
 					const jsonObj = JSON.parse(e.target.result as string);
 					const { cymbals, snares, kicks } = jsonObj;
 
-					try {
-						countsSchema.parse(cymbals);
-						countsSchema.parse(snares);
-						countsSchema.parse(kicks);
-					} catch (error) {
-						alert('Invalid data. Please check the file and try again.');
-						console.error(error);
+					if (!isBeatValid(cymbals, snares, kicks)) {
 						return;
 					}
 
