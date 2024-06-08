@@ -14,6 +14,17 @@ function Blinker({ bpm, isRunning, setIsRunning }: BlinkerProps) {
 
 	const int = (60 / bpm) * 1000;
 
+	const beep = () => {
+		const context = new AudioContext();
+		const o = context.createOscillator();
+		o.type = 'sine';
+		o.connect(context.destination);
+		o.start();
+		setTimeout(() => {
+			o.stop();
+		}, 100);
+	};
+
 	const flash = () => {
 		setIsLit(true);
 		setTimeout(() => {
@@ -21,15 +32,20 @@ function Blinker({ bpm, isRunning, setIsRunning }: BlinkerProps) {
 		}, 100);
 	};
 
+	const beat = () => {
+		beep();
+		flash();
+	};
+
 	useEffect(() => {
 		const interval = setInterval(() => {
 			if (isRunning) {
-				flash();
+				beat();
 			}
 		}, int);
 
 		return () => clearInterval(interval);
-	}, [isRunning, flash, int]);
+	}, [isRunning, beat, int]);
 
 	return (
 		<button
