@@ -1,6 +1,8 @@
+import type { Dispatch, SetStateAction } from 'react';
+
 type TempoProps = {
 	bpm: number;
-	setBpm: React.Dispatch<React.SetStateAction<number>>;
+	setBpm: Dispatch<SetStateAction<number>>;
 };
 
 function Tempo({ bpm, setBpm }: TempoProps) {

@@ -1,13 +1,11 @@
 import type { counts } from '../../types/counts';
 
-import { getSubdivision } from '../../scripts';
+import { useDrums } from '../../context/Drums';
+import { useSubdivision } from '../../scripts';
 
-type SnaresProps = {
-	snares: counts;
-	setSnares: React.Dispatch<React.SetStateAction<counts>>;
-};
+function Snares() {
+	const { snares, setSnares } = useDrums();
 
-function Snares({ snares, setSnares }: SnaresProps) {
 	function changeSnares(id: string) {
 		const indices = id.split('-').slice(1).map(Number);
 		const newSnares: counts = [...snares];
@@ -24,8 +22,8 @@ function Snares({ snares, setSnares }: SnaresProps) {
 						type='checkbox'
 						className='Snare'
 						checked={division}
-						key={`snare-${i}-${getSubdivision(j)}`}
-						title={`Snare: ${i + 1}${getSubdivision(j)}`}
+						key={`snare-${i}-${useSubdivision(j)}`}
+						title={`Snare: ${i + 1}${useSubdivision(j)}`}
 						id={`snare-${i}-${j}`}
 						onChange={(e) => changeSnares(e.target.id)}
 					/>

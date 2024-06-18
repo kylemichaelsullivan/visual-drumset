@@ -1,24 +1,21 @@
-import type { counts } from '../../types/counts';
+import { useDrums } from '../../context/Drums';
+import { useBackgroundClass, useSubdivision } from '../../scripts';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoePrints as faKick } from '@fortawesome/free-solid-svg-icons';
 
-import { getBackgroundClass, getSubdivision } from '../../scripts';
+function Kicks() {
+	const { kicks } = useDrums();
 
-type KicksProps = {
-	kicks: counts;
-};
-
-function Kicks({ kicks }: KicksProps) {
 	return (
 		<div className='Kicks grid grid-cols-8 sm:grid-cols-16'>
 			{kicks.map((count, i) =>
 				count.map((division, j) => (
 					<div
-						className={`Kick ${getBackgroundClass(
+						className={`Kick ${useBackgroundClass(
 							j
 						)} text-red-700 text-center py-2`}
-						key={`${i}-${getSubdivision(j)}`}
+						key={`${i}-${useSubdivision(j)}`}
 					>
 						{division && <FontAwesomeIcon icon={faKick} />}
 					</div>

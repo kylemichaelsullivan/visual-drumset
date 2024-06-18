@@ -1,15 +1,13 @@
-import type { beat } from '../../types/beat';
+import { useDrums } from '../../context/Drums';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
-type ExportProps = {
-	beat: beat;
-};
+function Export() {
+	const { cymbals, snares, kicks } = useDrums();
 
-function Export({ beat }: ExportProps) {
 	function handleExport() {
-		const stringifiedJSON = JSON.stringify(beat);
+		const stringifiedJSON = JSON.stringify({ cymbals, snares, kicks });
 
 		const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(
 			stringifiedJSON

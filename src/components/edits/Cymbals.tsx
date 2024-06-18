@@ -1,13 +1,11 @@
 import type { counts } from '../../types/counts';
 
-import { getSubdivision } from '../../scripts';
+import { useDrums } from '../../context/Drums';
+import { useSubdivision } from '../../scripts';
 
-type CymbalsProps = {
-	cymbals: counts;
-	setCymbals: React.Dispatch<React.SetStateAction<counts>>;
-};
+function Cymbals() {
+	const { cymbals, setCymbals } = useDrums();
 
-function Cymbals({ cymbals, setCymbals }: CymbalsProps) {
 	function changeCymbals(id: string) {
 		const indices = id.split('-').slice(1).map(Number);
 		const newCymbals: counts = [...cymbals];
@@ -24,8 +22,8 @@ function Cymbals({ cymbals, setCymbals }: CymbalsProps) {
 						type='checkbox'
 						className='Cymbal'
 						checked={division}
-						key={`cymbal-${i}-${getSubdivision(j)}`}
-						title={`Cymbal: ${i + 1}${getSubdivision(j)}`}
+						key={`cymbal-${i}-${useSubdivision(j)}`}
+						title={`Cymbal: ${i + 1}${useSubdivision(j)}`}
 						id={`cymbal-${i}-${j}`}
 						onChange={(e) => changeCymbals(e.target.id)}
 					/>

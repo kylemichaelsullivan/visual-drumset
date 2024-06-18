@@ -1,21 +1,16 @@
-import { useState } from 'react';
+import { useState, type ChangeEvent } from 'react';
 
-import type { counts } from '../../types/counts';
+import { useDrums } from '../../context/Drums';
 import { isBeatValid } from './Zod';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
-type ImportProps = {
-	setCymbals: React.Dispatch<React.SetStateAction<counts>>;
-	setSnares: React.Dispatch<React.SetStateAction<counts>>;
-	setKicks: React.Dispatch<React.SetStateAction<counts>>;
-};
-
-function Import({ setCymbals, setSnares, setKicks }: ImportProps) {
+function Import() {
+	const { setCymbals, setSnares, setKicks } = useDrums();
 	const [file, setFile] = useState<File | null>(null);
 
-	function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
+	function handleImport(e: ChangeEvent<HTMLInputElement>) {
 		if (e.target.files) {
 			setFile(e.target.files[0]);
 		}
@@ -52,7 +47,15 @@ function Import({ setCymbals, setSnares, setKicks }: ImportProps) {
 	}
 
 	return (
-		<div className='Import flex gap-2 items-center'>
+		<div className='Import flex flex-col gap-2 items-end sm:flex-row sm:items-center'>
+			<input
+				type='file'
+				className='cursor-pointer'
+				accept='.json'
+				onChange={handleImport}
+				id='file-upload'
+			/>
+
 			<button
 				type='button'
 				className='flex gap-2 items-center bg-gray-100 border border-black px-4 py-2 transition-colors duration-300 hover:bg-gray-300 hover:ring-1'
@@ -62,14 +65,6 @@ function Import({ setCymbals, setSnares, setKicks }: ImportProps) {
 				<span>Import</span>
 				<FontAwesomeIcon icon={faUpload} />
 			</button>
-
-			<input
-				type='file'
-				className='cursor-pointer'
-				accept='.json'
-				onChange={handleImport}
-				id='file-upload'
-			/>
 		</div>
 	);
 }

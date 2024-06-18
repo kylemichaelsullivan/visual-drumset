@@ -1,12 +1,11 @@
+import { useEditing } from '../../context/Editing';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faCheck } from '@fortawesome/free-solid-svg-icons';
 
-type EditButtonProps = {
-	isEditing: boolean;
-	setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
-};
+function EditButton() {
+	const { isEditing, setIsEditing } = useEditing();
 
-function EditButton({ isEditing, setIsEditing }: EditButtonProps) {
 	return (
 		<button
 			type='button'

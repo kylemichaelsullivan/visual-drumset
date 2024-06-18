@@ -1,13 +1,11 @@
 import type { counts } from '../../types/counts';
 
-import { getSubdivision } from '../../scripts';
+import { useDrums } from '../../context/Drums';
+import { useSubdivision } from '../../scripts';
 
-type EditBeatProps = {
-	kicks: counts;
-	setKicks: React.Dispatch<React.SetStateAction<counts>>;
-};
+function Kicks() {
+	const { kicks, setKicks } = useDrums();
 
-function EditBeat({ kicks, setKicks }: EditBeatProps) {
 	function changeKicks(id: string) {
 		const indices = id.split('-').slice(1).map(Number);
 		const newKicks: counts = [...kicks];
@@ -24,8 +22,8 @@ function EditBeat({ kicks, setKicks }: EditBeatProps) {
 						type='checkbox'
 						className='Kick'
 						checked={division}
-						key={`kick-${i}${getSubdivision(j)}`}
-						title={`Kick: ${i + 1}${getSubdivision(j)}`}
+						key={`kick-${i}${useSubdivision(j)}`}
+						title={`Kick: ${i + 1}${useSubdivision(j)}`}
 						id={`kick-${i}-${j}`}
 						onChange={(e) => changeKicks(e.target.id)}
 					/>
@@ -35,4 +33,4 @@ function EditBeat({ kicks, setKicks }: EditBeatProps) {
 	);
 }
 
-export default EditBeat;
+export default Kicks;

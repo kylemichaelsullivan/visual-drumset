@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type Dispatch, type SetStateAction } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
@@ -6,7 +6,7 @@ import { faPlay } from '@fortawesome/free-solid-svg-icons';
 type BlinkerProps = {
 	bpm: number;
 	isRunning: boolean;
-	setIsRunning: React.Dispatch<React.SetStateAction<boolean>>;
+	setIsRunning: Dispatch<SetStateAction<boolean>>;
 };
 
 function Blinker({ bpm, isRunning, setIsRunning }: BlinkerProps) {
