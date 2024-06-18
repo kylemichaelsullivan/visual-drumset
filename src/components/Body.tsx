@@ -1,8 +1,11 @@
-import VisualDisplay from './displays/VisualDisplay';
-import Metronome from './metronome/Metronome';
-import IO from './files/IO';
 import { DrumsProvider } from '../context/Drums';
 import { EditingProvider } from '../context/Editing';
+
+import VisualDisplay from './displays/VisualDisplay';
+
+import Metronome from './metronome/Metronome';
+import BeatSelector from './files/BeatSelector';
+import IO from './files/IO';
 
 function Body() {
 	return (
@@ -12,6 +15,7 @@ function Body() {
 					<VisualDisplay />
 				</EditingProvider>
 				<Metronome />
+				<BeatSelector />
 				<IO />
 			</main>
 		</DrumsProvider>
