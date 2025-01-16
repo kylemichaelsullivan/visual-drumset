@@ -10,7 +10,7 @@ import IO from './files/IO';
 function Body() {
 	return (
 		<DrumsProvider>
-			<main className='Body flex flex-col justify-between gap-4 p-4'>
+			<main className='Body flex flex-col justify-between gap-4 w-full max-w-screen-xl p-4 mx-auto'>
 				<EditingProvider>
 					<VisualDisplay />
 				</EditingProvider>
