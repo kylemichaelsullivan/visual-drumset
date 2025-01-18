@@ -27,7 +27,7 @@ function Kicks() {
 						id={`kick-${i}-${j}`}
 						onChange={(e) => changeKicks(e.target.id)}
 					/>
-				))
+				)),
 			)}
 		</div>
 	);

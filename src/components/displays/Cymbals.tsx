@@ -13,13 +13,13 @@ function Cymbals() {
 				count.map((division, j) => (
 					<div
 						className={`Cymbal ${useBackgroundClass(
-							j
+							j,
 						)} text-yellow-400 text-center py-2`}
 						key={`${i}-${useSubdivision(j)}`}
 					>
 						{division && <FontAwesomeIcon icon={faCymbal} />}
 					</div>
-				))
+				)),
 			)}
 		</div>
 	);

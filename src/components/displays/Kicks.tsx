@@ -13,13 +13,13 @@ function Kicks() {
 				count.map((division, j) => (
 					<div
 						className={`Kick ${useBackgroundClass(
-							j
+							j,
 						)} text-red-700 text-center py-2`}
 						key={`${i}-${useSubdivision(j)}`}
 					>
 						{division && <FontAwesomeIcon icon={faKick} />}
 					</div>
-				))
+				)),
 			)}
 		</div>
 	);

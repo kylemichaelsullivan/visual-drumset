@@ -27,7 +27,7 @@ function Cymbals() {
 						id={`cymbal-${i}-${j}`}
 						onChange={(e) => changeCymbals(e.target.id)}
 					/>
-				))
+				)),
 			)}
 		</div>
 	);

@@ -27,7 +27,7 @@ function Snares() {
 						id={`snare-${i}-${j}`}
 						onChange={(e) => changeSnares(e.target.id)}
 					/>
-				))
+				)),
 			)}
 		</div>
 	);

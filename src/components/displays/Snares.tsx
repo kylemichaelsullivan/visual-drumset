@@ -13,13 +13,13 @@ function Snares() {
 				count.map((division, j) => (
 					<div
 						className={`Snare ${useBackgroundClass(
-							j
+							j,
 						)} text-yellow-900 text-center py-2`}
 						key={`${i}-${useSubdivision(j)}`}
 					>
 						{division && <FontAwesomeIcon icon={faSnare} />}
 					</div>
-				))
+				)),
 			)}
 		</div>
 	);

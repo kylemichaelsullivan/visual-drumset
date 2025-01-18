@@ -33,7 +33,7 @@ function Import() {
 					setKicks(() => kicks);
 
 					const fileUpload = document.getElementById(
-						'file-upload'
+						'file-upload',
 					) as HTMLInputElement;
 					if (fileUpload) {
 						fileUpload.value = '';

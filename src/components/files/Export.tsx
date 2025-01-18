@@ -10,7 +10,7 @@ function Export() {
 		const stringifiedJSON = JSON.stringify({ cymbals, snares, kicks });
 
 		const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(
-			stringifiedJSON
+			stringifiedJSON,
 		)}`;
 
 		const defaultExportFilename = 'beat.json';
