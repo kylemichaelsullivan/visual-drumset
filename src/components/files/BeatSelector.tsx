@@ -21,6 +21,13 @@ function BeatSelector() {
 	};
 
 	const applyBeat = async () => {
+		if(selectedBeat === 'random') {
+			const randomBeat = Math.floor(Math.random() * 42);
+			setSelectedBeat(beats[randomBeat].value);
+			await fetchAndApplyBeat(beats[randomBeat].value);
+			return;
+		}
+
 		try {
 			const response = await fetch(`../../../beats/${selectedBeat}`);
 			if (!response.ok) {
@@ -41,6 +48,23 @@ function BeatSelector() {
 		}
 	};
 
+	const fetchAndApplyBeat = async (beatValue: string) => {
+		const response = await fetch(`../../../beats/${beatValue}`);
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+		const beatJSON = await response.json();
+		const { cymbals, snares, kicks } = beatJSON;
+
+		if (!isBeatValid(cymbals, snares, kicks)) {
+			return;
+		}
+
+		setCymbals(() => cymbals);
+		setSnares(() => snares);
+		setKicks(() => kicks);
+	};
+
 	return (
 		<div className='BeatSelector flex gap-2 items-center'>
 			<select
@@ -54,6 +78,7 @@ function BeatSelector() {
 						{option.label}
 					</option>
 				))}
+				<option key='random' value='random'>Random</option>
 			</select>
 
 			<button
