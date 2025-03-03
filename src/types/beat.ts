@@ -5,3 +5,8 @@ export type beat = {
 	snares: counts;
 	kicks: counts;
 };
+
+export type BeatSelect = {
+	value: string;
+	label: string;
+};
