@@ -15,7 +15,7 @@ function BeatSelectorSelect({
 }: BeatSelectorSelectProps) {
 	return (
 		<select
-			className='BeatSelectorSelect cursor-pointer flex-auto border border-gray-400 w-full p-2 hover:ring-1'
+			className='BeatSelectorSelect cursor-pointer flex-auto border border-gray-400 rounded-none w-full p-2 hover:ring-1'
 			title='Choose Beat'
 			value={selectedBeat}
 			onChange={handleChange}
