@@ -1,10 +1,9 @@
-import { useState, type ChangeEvent } from 'react';
-
-import { useDrums } from '../../context/Drums';
-import { isBeatValid } from './Zod';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useState } from 'react';
+import { useDrums } from '@/context/useDrums';
+import { isBeatValid } from './Zod';
+import type { ChangeEvent } from 'react';
 
 function Import() {
 	const { setCymbals, setSnares, setKicks } = useDrums();
@@ -33,7 +32,7 @@ function Import() {
 					setKicks(() => kicks);
 
 					const fileUpload = document.getElementById(
-						'file-upload',
+						'file-upload'
 					) as HTMLInputElement;
 					if (fileUpload) {
 						fileUpload.value = '';

@@ -1,8 +1,8 @@
-import EditButton from '../edits/EditButton';
+import EditBeat from '@/components/edits/EditBeat';
+import EditButton from '@/components/edits/EditButton';
+import { useEditing } from '@/context/Editing';
 import Counts from './Counts';
 import ShowBeat from './ShowBeat';
-import EditBeat from '../edits/EditBeat';
-import { useEditing } from '../../context/Editing';
 
 function VisualDisplay() {
 	const { isEditing } = useEditing();

@@ -1,8 +1,7 @@
-import { useDrums } from '../../context/Drums';
-import { useBackgroundClass, useSubdivision } from '../../scripts';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleDot as faCymbal } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useDrums } from '@/context/useDrums';
+import { getBackgroundClass, getSubdivision } from '@/scripts';
 
 function Cymbals() {
 	const { cymbals } = useDrums();
@@ -12,14 +11,14 @@ function Cymbals() {
 			{cymbals.map((count, i) =>
 				count.map((division, j) => (
 					<div
-						className={`Cymbal ${useBackgroundClass(
-							j,
+						className={`Cymbal ${getBackgroundClass(
+							j
 						)} text-yellow-400 text-center py-2`}
-						key={`${i}-${useSubdivision(j)}`}
+						key={`${i}-${getSubdivision(j)}`}
 					>
 						{division && <FontAwesomeIcon icon={faCymbal} />}
 					</div>
-				)),
+				))
 			)}
 		</div>
 	);

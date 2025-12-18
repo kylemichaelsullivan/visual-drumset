@@ -1,11 +1,9 @@
-import { DrumsProvider } from '../context/Drums';
-import { EditingProvider } from '../context/Editing';
-
+import { DrumsProvider } from '@/context/Drums';
+import { EditingProvider } from '@/context/Editing';
 import VisualDisplay from './displays/VisualDisplay';
-
-import Metronome from './metronome/Metronome';
 import BeatSelector from './files/BeatSelector';
 import IO from './files/IO';
+import Metronome from './metronome/Metronome';
 
 function Body() {
 	return (

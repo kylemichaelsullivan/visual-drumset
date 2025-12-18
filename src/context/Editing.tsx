@@ -1,12 +1,5 @@
-import {
-	useState,
-	useEffect,
-	createContext,
-	useContext,
-	type Dispatch,
-	type ReactNode,
-	type SetStateAction,
-} from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import type { Dispatch, ReactNode, SetStateAction } from 'react';
 
 type EditingContextType = {
 	isEditing: boolean;

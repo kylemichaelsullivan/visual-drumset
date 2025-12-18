@@ -1,5 +1,5 @@
-import type { counts } from '../../types/counts';
 import { z } from 'zod';
+import type { counts } from '@/types/counts';
 
 const countSchema = z.array(z.boolean()).length(4);
 const countsSchema = z.array(countSchema).length(4);

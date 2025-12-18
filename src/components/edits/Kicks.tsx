@@ -1,7 +1,6 @@
-import type { counts } from '../../types/counts';
-
-import { useDrums } from '../../context/Drums';
-import { useSubdivision } from '../../scripts';
+import { useDrums } from '@/context/useDrums';
+import { getSubdivision } from '@/scripts';
+import type { counts } from '@/types/counts';
 
 function Kicks() {
 	const { kicks, setKicks } = useDrums();
@@ -22,12 +21,12 @@ function Kicks() {
 						type='checkbox'
 						className='Kick'
 						checked={division}
-						key={`kick-${i}${useSubdivision(j)}`}
-						title={`Kick: ${i + 1}${useSubdivision(j)}`}
+						key={`kick-${i}${getSubdivision(j)}`}
+						title={`Kick: ${i + 1}${getSubdivision(j)}`}
 						id={`kick-${i}-${j}`}
 						onChange={(e) => changeKicks(e.target.id)}
 					/>
-				)),
+				))
 			)}
 		</div>
 	);

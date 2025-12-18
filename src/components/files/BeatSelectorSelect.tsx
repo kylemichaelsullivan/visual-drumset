@@ -1,6 +1,5 @@
 import type { ChangeEvent } from 'react';
-
-import { BeatSelect } from '../../types/beat';
+import type { BeatSelect } from '@/types/beat';
 
 type BeatSelectorSelectProps = {
 	beats: BeatSelect[];

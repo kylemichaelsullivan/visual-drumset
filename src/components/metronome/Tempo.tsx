@@ -20,7 +20,7 @@ function Tempo({ bpm, setBpm }: TempoProps) {
 				step={step}
 				title='Set Tempo'
 				value={bpm}
-				onChange={(e) => setBpm(Number.parseInt(e.target.value))}
+				onChange={(e) => setBpm(Number.parseInt(e.target.value, 10))}
 			/>
 			<input
 				type='number'
@@ -30,7 +30,7 @@ function Tempo({ bpm, setBpm }: TempoProps) {
 				step={step}
 				title='Set Tempo'
 				value={bpm}
-				onChange={(e) => setBpm(Number.parseInt(e.target.value))}
+				onChange={(e) => setBpm(Number.parseInt(e.target.value, 10))}
 			/>
 		</div>
 	);

@@ -1,7 +1,6 @@
-import { useDrums } from '../../context/Drums';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useDrums } from '@/context/useDrums';
 
 function Export() {
 	const { cymbals, snares, kicks } = useDrums();
@@ -10,7 +9,7 @@ function Export() {
 		const stringifiedJSON = JSON.stringify({ cymbals, snares, kicks });
 
 		const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(
-			stringifiedJSON,
+			stringifiedJSON
 		)}`;
 
 		const defaultExportFilename = 'beat.json';

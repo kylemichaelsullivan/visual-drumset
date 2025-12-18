@@ -1,5 +1,4 @@
 import { useState } from 'react';
-
 import Blinker from './Blinker';
 import Tempo from './Tempo';
 

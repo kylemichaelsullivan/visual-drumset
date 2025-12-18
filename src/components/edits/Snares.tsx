@@ -1,7 +1,6 @@
-import type { counts } from '../../types/counts';
-
-import { useDrums } from '../../context/Drums';
-import { useSubdivision } from '../../scripts';
+import { useDrums } from '@/context/useDrums';
+import { getSubdivision } from '@/scripts';
+import type { counts } from '@/types/counts';
 
 function Snares() {
 	const { snares, setSnares } = useDrums();
@@ -22,12 +21,12 @@ function Snares() {
 						type='checkbox'
 						className='Snare'
 						checked={division}
-						key={`snare-${i}-${useSubdivision(j)}`}
-						title={`Snare: ${i + 1}${useSubdivision(j)}`}
+						key={`snare-${i}-${getSubdivision(j)}`}
+						title={`Snare: ${i + 1}${getSubdivision(j)}`}
 						id={`snare-${i}-${j}`}
 						onChange={(e) => changeSnares(e.target.id)}
 					/>
-				)),
+				))
 			)}
 		</div>
 	);

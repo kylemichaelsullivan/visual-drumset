@@ -1,14 +1,11 @@
-import { useState, type SetStateAction } from 'react';
-
-import { useDrums } from '../../context/Drums';
-
-import { isBeatValid } from './Zod';
-
-import BeatSelectorSelect from './BeatSelectorSelect';
-import BeatSelectorArrows from './BeatSelectorArrows';
+import { useState } from 'react';
+import { useDrums } from '@/context/useDrums';
 import BeatSelectorApply from './BeatSelectorApply';
-
-import type { BeatSelect } from '../../types/beat';
+import BeatSelectorArrows from './BeatSelectorArrows';
+import BeatSelectorSelect from './BeatSelectorSelect';
+import { isBeatValid } from './Zod';
+import type { SetStateAction } from 'react';
+import type { BeatSelect } from '@/types/beat';
 
 function BeatSelector() {
 	const { setCymbals, setSnares, setKicks } = useDrums();

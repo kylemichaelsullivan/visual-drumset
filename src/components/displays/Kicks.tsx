@@ -1,8 +1,7 @@
-import { useDrums } from '../../context/Drums';
-import { useBackgroundClass, useSubdivision } from '../../scripts';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoePrints as faKick } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useDrums } from '@/context/useDrums';
+import { getBackgroundClass, getSubdivision } from '@/scripts';
 
 function Kicks() {
 	const { kicks } = useDrums();
@@ -12,14 +11,14 @@ function Kicks() {
 			{kicks.map((count, i) =>
 				count.map((division, j) => (
 					<div
-						className={`Kick ${useBackgroundClass(
-							j,
+						className={`Kick ${getBackgroundClass(
+							j
 						)} text-red-700 text-center py-2`}
-						key={`${i}-${useSubdivision(j)}`}
+						key={`${i}-${getSubdivision(j)}`}
 					>
 						{division && <FontAwesomeIcon icon={faKick} />}
 					</div>
-				)),
+				))
 			)}
 		</div>
 	);

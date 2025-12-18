@@ -1,7 +1,6 @@
-import type { counts } from '../../types/counts';
-
-import { useDrums } from '../../context/Drums';
-import { useSubdivision } from '../../scripts';
+import { useDrums } from '@/context/useDrums';
+import { getSubdivision } from '@/scripts';
+import type { counts } from '@/types/counts';
 
 function Cymbals() {
 	const { cymbals, setCymbals } = useDrums();
@@ -22,12 +21,12 @@ function Cymbals() {
 						type='checkbox'
 						className='Cymbal'
 						checked={division}
-						key={`cymbal-${i}-${useSubdivision(j)}`}
-						title={`Cymbal: ${i + 1}${useSubdivision(j)}`}
+						key={`cymbal-${i}-${getSubdivision(j)}`}
+						title={`Cymbal: ${i + 1}${getSubdivision(j)}`}
 						id={`cymbal-${i}-${j}`}
 						onChange={(e) => changeCymbals(e.target.id)}
 					/>
-				)),
+				))
 			)}
 		</div>
 	);

@@ -1,6 +1,6 @@
 import Cymbals from './Cymbals';
-import Snares from './Snares';
 import Kicks from './Kicks';
+import Snares from './Snares';
 
 function EditBeat() {
 	return (
