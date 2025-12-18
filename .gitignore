@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Package manager lock files (using Bun)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# TypeScript build info
+*.tsbuildinfo
+vite.config.d.ts
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
