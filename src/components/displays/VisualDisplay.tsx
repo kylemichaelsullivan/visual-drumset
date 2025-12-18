@@ -1,6 +1,6 @@
 import EditBeat from '@/components/edits/EditBeat';
 import EditButton from '@/components/edits/EditButton';
-import { useEditing } from '@/context/Editing';
+import { useEditing } from '@/context/useEditing';
 import Counts from './Counts';
 import ShowBeat from './ShowBeat';
 

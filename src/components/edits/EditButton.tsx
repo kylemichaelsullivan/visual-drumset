@@ -1,6 +1,6 @@
 import { faCheck, faPen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEditing } from '@/context/Editing';
+import { useEditing } from '@/context/useEditing';
 
 function EditButton() {
 	const { isEditing, setIsEditing } = useEditing();

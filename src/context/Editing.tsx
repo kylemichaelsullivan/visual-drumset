@@ -1,18 +1,20 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import type { Dispatch, ReactNode, SetStateAction } from 'react';
 
-type EditingContextType = {
+export type EditingContextType = {
 	isEditing: boolean;
 	setIsEditing: Dispatch<SetStateAction<boolean>>;
 };
 
-const EditingContext = createContext<EditingContextType | undefined>(undefined);
+export const EditingContext = createContext<EditingContextType | undefined>(
+	undefined
+);
 
 type EditingProviderProps = {
 	children: ReactNode;
 };
 
-export const EditingProvider = ({ children }: EditingProviderProps) => {
+export function EditingProvider({ children }: EditingProviderProps) {
 	const [isEditing, setIsEditing] = useState(false);
 
 	useEffect(() => {
@@ -34,12 +36,4 @@ export const EditingProvider = ({ children }: EditingProviderProps) => {
 			{children}
 		</EditingContext.Provider>
 	);
-};
-
-export const useEditing = (): EditingContextType => {
-	const context = useContext(EditingContext);
-	if (!context) {
-		throw new Error('useEditing must be used within a <EditingProvider />');
-	}
-	return context;
-};
+}
