@@ -1,15 +1,8 @@
-import {
-	useState,
-	createContext,
-	useContext,
-	type Dispatch,
-	type ReactNode,
-	type SetStateAction,
-} from 'react';
+import { createContext, useMemo, useState } from 'react';
+import type { Dispatch, ReactNode, SetStateAction } from 'react';
+import type { counts } from '@/types/counts';
 
-import type { counts } from '../types/counts';
-
-type DrumsContextType = {
+export type DrumsContextType = {
 	cymbals: counts;
 	snares: counts;
 	kicks: counts;
@@ -18,47 +11,46 @@ type DrumsContextType = {
 	setKicks: Dispatch<SetStateAction<counts>>;
 };
 
-const DrumsContext = createContext<DrumsContextType | undefined>(undefined);
+export const DrumsContext = createContext<DrumsContextType | undefined>(
+	undefined
+);
 
 type DrumsProviderProps = {
 	children: ReactNode;
 };
 
-export const DrumsProvider = ({ children }: DrumsProviderProps) => {
-	const [cymbals, setCymbals] = useState<counts>([
-		[true, false, true, false],
-		[true, false, true, false],
-		[true, false, true, false],
-		[true, false, true, false],
-	]);
+const initialCymbals: counts = [
+	[true, false, true, false],
+	[true, false, true, false],
+	[true, false, true, false],
+	[true, false, true, false],
+];
 
-	const [snares, setSnares] = useState<counts>([
-		[false, false, false, false],
-		[true, false, false, false],
-		[false, false, false, false],
-		[true, false, false, false],
-	]);
+const initialSnares: counts = [
+	[false, false, false, false],
+	[true, false, false, false],
+	[false, false, false, false],
+	[true, false, false, false],
+];
 
-	const [kicks, setKicks] = useState<counts>([
-		[true, false, false, false],
-		[false, false, false, false],
-		[true, false, false, false],
-		[false, false, false, false],
-	]);
+const initialKicks: counts = [
+	[true, false, false, false],
+	[false, false, false, false],
+	[true, false, false, false],
+	[false, false, false, false],
+];
+
+export function DrumsProvider({ children }: DrumsProviderProps) {
+	const [cymbals, setCymbals] = useState<counts>(() => initialCymbals);
+	const [snares, setSnares] = useState<counts>(() => initialSnares);
+	const [kicks, setKicks] = useState<counts>(() => initialKicks);
+
+	const value = useMemo(
+		() => ({ cymbals, snares, kicks, setCymbals, setSnares, setKicks }),
+		[cymbals, snares, kicks]
+	);
 
 	return (
-		<DrumsContext.Provider
-			value={{ cymbals, snares, kicks, setCymbals, setSnares, setKicks }}
-		>
-			{children}
-		</DrumsContext.Provider>
+		<DrumsContext.Provider value={value}>{children}</DrumsContext.Provider>
 	);
-};
-
-export const useDrums = (): DrumsContextType => {
-	const context = useContext(DrumsContext);
-	if (!context) {
-		throw new Error('useDrums must be used within a <DrumsProvider />');
-	}
-	return context;
-};
+}
