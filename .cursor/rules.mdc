@@ -9,7 +9,7 @@ alwaysApply: true
 - Write and review code like a senior developer
 - Challenge erroneous assumptions and inefficiencies
 - Use **Bun** for package management
-- Prefer `bun build` over `bun dev` for compilation
+- Prefer `bun run build` over `bun dev` for compilation
 - Use **TypeScript** with strict configuration
 - Follow **React 18** with **Vite** architecture
 - Use typographic apostrophe ' instead of straight apostrophe ' in ALL user-facing text
@@ -17,7 +17,7 @@ alwaysApply: true
 ## Package Management
 
 - **Package Manager**: Bun
-- **Build Command**: `bun build` (TypeScript compilation + Vite build)
+- **Build Command**: `bun run build` (TypeScript compilation + Vite build)
 - **Development Command**: `bun dev` (Vite dev server with HMR)
 - **Lock File**: `bun.lock`
 
@@ -26,7 +26,7 @@ alwaysApply: true
 ### Development Commands
 
 - **Development Server**: `bun dev` (Vite dev server with HMR)
-- **Production Build**: `bun build` (TypeScript compilation + Vite build)
+- **Production Build**: `bun run build` (TypeScript compilation + Vite build)
 - **Preview Build**: `bun preview` (Preview production build locally)
 - **Linting**: `bun lint` (Run Biome linter)
 - **Lint Fix**: `bun lint:fix` (Run Biome linter and auto-fix)

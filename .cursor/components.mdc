@@ -394,7 +394,7 @@ import clsx from 'clsx';
 ### Testing Commands
 
 - Use `bun dev` for development server
-- Use `bun build` for production build
+- Use `bun run build` for production build
 - Use `bun lint` for linting
 - Use `bun format` for formatting code
 - Use `bun format:check` for checking code format
