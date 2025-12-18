@@ -2,15 +2,10 @@ import { useContext } from 'react';
 import { IsPlayingContext } from './IsPlaying';
 import type { IsPlayingContextType } from './IsPlaying';
 
-export const useMetronome = (): IsPlayingContextType => {
+export const useIsPlaying = (): IsPlayingContextType => {
 	const context = useContext(IsPlayingContext);
 	if (!context) {
-		throw new Error('useMetronome must be used within a <IsPlayingProvider />');
+		throw new Error('useIsPlaying must be used within a <IsPlayingProvider />');
 	}
 	return context;
-};
-
-export const useIsPlaying = (): boolean => {
-	const { isRunning } = useMetronome();
-	return isRunning;
 };
