@@ -7,7 +7,7 @@ import ShowBeat from './ShowBeat';
 
 function VisualDisplay() {
 	const { isEditing } = useEditing();
-	const isPlaying = useIsPlaying();
+	const { isRunning: isPlaying } = useIsPlaying();
 
 	return (
 		<div
