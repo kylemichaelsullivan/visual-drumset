@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react';
+import type { CSSProperties, Dispatch, SetStateAction } from 'react';
 
 type TempoProps = {
 	bpm: number;
@@ -9,12 +9,14 @@ function Tempo({ bpm, setBpm }: TempoProps) {
 	const min = 40;
 	const max = 300;
 	const step = 5;
+	const percentage = ((bpm - min) / (max - min)) * 100;
 
 	return (
 		<div className='Tempo flex gap-2 items-center w-full'>
 			<input
 				type='range'
 				className='cursor-pointer flex-auto'
+				style={{ '--slider-progress': `${percentage}%` } as CSSProperties}
 				min={min}
 				max={max}
 				step={step}
