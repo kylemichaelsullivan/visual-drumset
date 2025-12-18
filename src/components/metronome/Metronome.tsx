@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useMetronome } from '@/context/useIsPlaying';
 import Blinker from './Blinker';
 import Tempo from './Tempo';
 
 function Metronome() {
-	const [bpm, setBpm] = useState(120);
-	const [isRunning, setIsRunning] = useState(false);
+	const { bpm, setBpm, isRunning, setIsRunning } = useMetronome();
 
 	return (
 		<div className='Metronome flex flex-col justify-center gap-4 items-center border p-4 sm:flex-row'>

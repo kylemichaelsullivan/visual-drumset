@@ -33,6 +33,14 @@ input[type='checkbox'] {
 	display: none;
 }
 
+.VisualDisplay.isPlaying .Icon img {
+	filter: grayscale(1);
+}
+
+.VisualDisplay.isPlaying .Icon.active img {
+	filter: grayscale(0);
+}
+
 @media (min-width: 640px) {
 	.sm\:grid-cols-16 {
 		grid-template-columns: repeat(16, minmax(0, 1fr));
