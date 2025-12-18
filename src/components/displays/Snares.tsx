@@ -1,7 +1,6 @@
-import { faDrum as faSnare } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDrums } from '@/context/useDrums';
 import { getBackgroundClass, getSubdivision } from '@/scripts';
+import Icon from './Icon';
 
 function Snares() {
 	const { snares } = useDrums();
@@ -11,12 +10,10 @@ function Snares() {
 			{snares.map((count, i) =>
 				count.map((division, j) => (
 					<div
-						className={`Snare ${getBackgroundClass(
-							j
-						)} text-yellow-900 text-center py-2`}
+						className={`Snare ${getBackgroundClass(j)} text-center p-2`}
 						key={`${i}-${getSubdivision(j)}`}
 					>
-						{division && <FontAwesomeIcon icon={faSnare} />}
+						{division && <Icon icon='snare' />}
 					</div>
 				))
 			)}
