@@ -1,0 +1,312 @@
+---
+globs: **/*.tsx, **/*.ts, **/*.css
+exclude: **/__tests__/**, **/*.test.*, **/*.spec.*, **/context/**, **/types/**, **/components/**
+alwaysApply: false
+---
+
+# Styling Standards for Visual Drumset
+
+## Typography
+
+- **Apostrophes**: ALL user-facing text MUST use the typographic apostrophe ' instead of the straight apostrophe '
+- **Consistency**: Maintain consistent typography throughout the application
+- **Font styling**: Use Tailwind font utilities (`font-bold`, etc.)
+- **No CSS variables**: Typography styles use Tailwind utilities directly, not CSS variables
+
+## Tailwind CSS
+
+- **Utility-first**: Use Tailwind utility classes for styling
+- **Direct strings**: Use direct strings for simple cases without conditionals
+- **No margins**: Avoid using Tailwind margin classes (`m-*`, `mx-*`, `my-*`, `mt-*`, `mr-*`, `mb-*`, `ml-*`)
+- **No space utilities**: Avoid using `space-x-*` or `space-y-*` utilities - they rely on margins
+- **Utility function**: Use `clsx()` for conditional classes
+- **Tailwind integration**: Tailwind CSS is integrated via `@tailwindcss/vite` plugin
+
+### ClassName Patterns
+
+```tsx
+// Component name should be first in className for debugging
+className='ComponentName bg-white rounded-lg border p-4'
+
+// Conditional cases - use clsx
+className={clsx(
+  'ComponentName base-classes',
+  isActive && 'active-classes',
+  isDisabled && 'disabled-classes',
+  className
+)}
+
+// Component props - use clsx
+className={clsx('ComponentName base-classes', className)}
+```
+
+### JSX Attribute Order
+
+Follow this specific order for JSX attributes:
+
+1. **type** - Element type (for form elements)
+2. **className** - CSS classes
+3. **Standard HTML attributes** - (alphabetically)
+4. **Event handlers** - (alphabetically, starting with 'on')
+5. **ARIA attributes** - (alphabetically)
+6. **Custom data attributes** - (alphabetically)
+7. **ref** - React ref (penultimate)
+8. **id** - Element identifier (always last)
+
+#### JSX Attribute Order Example
+
+```tsx
+<button
+	type='button'
+	className='Button rounded-lg border bg-white p-4'
+	disabled={isDisabled}
+	title='Submit form'
+	onClick={handleClick}
+	onKeyDown={handleKeyDown}
+	aria-label='Submit form'
+	aria-describedby='submit-help'
+	data-testid='submit-button'
+	ref={buttonRef}
+	id='submit-button'
+>
+	Submit
+</button>
+```
+
+### Layout Principles
+
+- **Flexbox/Grid**: Use Flexbox and Grid for layouts
+- **Avoid margins**: Don't use CSS margins except for printing and where flex/grid won't work
+- **Avoid space- utilities**: Don't use `space-x-*` or `space-y-*` utilities - they rely on margins
+- **Use flex/gap**: Use `flex flex-col gap-*` for vertical spacing and `flex items-center gap-*` for horizontal spacing
+- **Consistent spacing**: Use Tailwind's spacing scale
+- **16-column grid**: Use `grid-cols-16` custom class for drum pattern grids
+
+### Spacing Patterns
+
+```tsx
+// Vertical spacing
+className = 'flex flex-col gap-2'; // Small gaps
+className = 'flex flex-col gap-4'; // Medium gaps
+className = 'flex flex-col gap-6'; // Large gaps
+
+// Horizontal spacing
+className = 'flex items-center gap-2';
+className = 'flex justify-between';
+
+// Responsive spacing
+className = 'flex flex-col gap-3 sm:gap-4';
+className = 'flex items-center gap-1.5 sm:gap-2';
+
+// Responsive layout changes
+className = 'flex flex-col sm:flex-row gap-4';
+```
+
+### Grid Layout Patterns
+
+```tsx
+// ✅ Use 16-column grid for drum patterns
+<div className='grid grid-cols-16 gap-2'>
+  {beats.map((beat, index) => (
+    <BeatCell key={index} active={beat} />
+  ))}
+</div>
+
+// ✅ Responsive grid columns
+<div className='grid grid-cols-16 sm:grid-cols-16 gap-2'>
+  {/* Drum pattern cells */}
+</div>
+```
+
+### Component Structure
+
+- **Avoid superfluous wrappers**: Don't create unnecessary wrapper divs that add DOM complexity
+- **Simplify nesting**: Remove redundant wrapper elements when possible
+- **Keep meaningful wrappers**: Retain wrappers that serve styling, semantic, or organizational purposes
+
+#### Wrapper Removal Examples
+
+```tsx
+// ❌ Avoid - redundant wrapper
+<div className='flex flex-col gap-6'>
+  <div className='flex flex-col gap-6'>
+    <Component />
+  </div>
+</div>
+
+// ✅ Good - simplified structure
+<div className='flex flex-col gap-6'>
+  <Component />
+</div>
+```
+
+## Font Awesome Icons
+
+- **Icon library**: Use Font Awesome icons for UI icons (buttons, navigation, etc.)
+- **Import pattern**: Import icons directly from `@fortawesome/free-solid-svg-icons`
+- **Component usage**: Use `FontAwesomeIcon` component from `@fortawesome/react-fontawesome`
+- **Accessibility**: Always include `aria-hidden="true"` on decorative icons
+- **Size consistency**: Use consistent sizing classes or let CSS handle sizing
+- **Icon selection**: Prefer solid icons over regular/light variants
+- **Semantic meaning**: Choose icons that clearly represent their function
+- **Consistency**: Use similar icons for similar actions across the application
+
+#### Font Awesome Usage Example
+
+```tsx
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
+
+<FontAwesomeIcon icon={isRunning ? faStop : faPlay} aria-hidden='true' />;
+```
+
+## Image Assets (PNG Icons)
+
+- **Drum icons**: Use PNG icons from `public/icons/` for drum visualization
+  - `cymbal.png` - Cymbal icon
+  - `snare.png` - Snare icon
+  - `bass.png` - Kick/bass icon
+- **Image usage**: Use standard `<img>` tags or import paths for PNG icons
+- **Accessibility**: Include appropriate `alt` text for drum icons when meaningful
+
+#### PNG Icon Usage Example
+
+```tsx
+// ✅ Use PNG icons for drum visualization
+<img src="/icons/cymbal.png" alt="Cymbal" className="w-6 h-6" />
+
+// Or with dynamic paths
+<img src={`/icons/${drumType}.png`} alt={drumType} />
+```
+
+## Custom CSS Patterns
+
+The application uses custom CSS in `index.css` for specific patterns:
+
+### 16-Column Grid
+
+- **Custom class**: `grid-cols-16` - Creates a 16-column grid for drum patterns
+- **Responsive variant**: `sm:grid-cols-16` - Responsive 16-column grid
+- **Usage**: Essential for displaying drum patterns (4 beats × 4 subdivisions = 16 cells)
+
+```css
+.grid-cols-16 {
+	grid-template-columns: repeat(16, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+	.sm\:grid-cols-16 {
+		grid-template-columns: repeat(16, minmax(0, 1fr));
+	}
+}
+```
+
+### VisualDisplay Responsive Behavior
+
+- **Minimum height**: `VisualDisplay` has `min-height: 14rem`
+- **Responsive display**: On mobile, even-numbered beat subdivisions are hidden (showing 1-&-3 only)
+- **Full display**: On `sm:` breakpoint and above, all 16 subdivisions are shown
+
+```css
+.VisualDisplay {
+	min-height: 14rem;
+}
+
+.VisualDisplay .Counts .Count:nth-of-type(even),
+.VisualDisplay .Cymbals .Cymbal:nth-of-type(even),
+.VisualDisplay .Snares .Snare:nth-of-type(even),
+.VisualDisplay .Kicks .Kick:nth-of-type(even) {
+	display: none;
+}
+
+@media (min-width: 640px) {
+	.VisualDisplay .Counts .Count:nth-of-type(even),
+	.VisualDisplay .Cymbals .Cymbal:nth-of-type(even),
+	.VisualDisplay .Snares .Snare:nth-of-type(even),
+	.VisualDisplay .Kicks .Kick:nth-of-type(even) {
+		display: block;
+	}
+}
+```
+
+### Global Styles
+
+- **Main layout**: `main` element has `min-height: calc(100vh - 3.625rem)`
+- **Links**: Links have no underline by default, underline on hover/focus
+- **Interactive elements**: Buttons and checkboxes have `cursor: pointer`
+
+```css
+main {
+	min-height: calc(100vh - 3.625rem);
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover,
+a:focus-visible {
+	text-decoration: underline;
+}
+
+button, input[type="checkbox"] {
+	cursor: pointer;
+}
+```
+
+### Custom CSS Guidelines
+
+- **Component-specific**: Use custom CSS classes for complex patterns that can't be achieved with utilities alone
+- **CSS organization**: Keep custom CSS in `index.css` organized by component/pattern
+- **Scoping**: Use component class names for scoping (e.g., `.VisualDisplay .Count`)
+- **Responsive patterns**: Use media queries for responsive behavior that Tailwind utilities can't handle
+
+## CSS Best Practices
+
+- **No !important**: Avoid using `!important` declarations in CSS
+- **TypeScript**: Avoid using the `any` type in TypeScript code
+- **Semantic HTML**: Use semantic HTML elements for better accessibility
+- **Responsive design**: Use Tailwind responsive prefixes (sm:, md:, lg:, xl:)
+- **Custom classes**: Use custom CSS classes for complex patterns that can't be achieved with utilities
+- **CSS organization**: Organize CSS by component/pattern, keep related styles together
+- **Tailwind first**: Prefer Tailwind utilities over custom CSS when possible
+
+## Layout Patterns
+
+### Container Patterns
+
+```tsx
+// ✅ Main content container
+<main className="Body flex flex-col justify-between gap-4 w-full max-w-screen-xl p-4 mx-auto">
+  {/* Content */}
+</main>
+
+// ✅ Display container with border
+<div className="VisualDisplay relative flex flex-col border p-4 pt-8">
+  {/* Display content */}
+</div>
+
+// ✅ Metronome container with responsive layout
+<div className="Metronome flex flex-col justify-center gap-4 items-center border p-4 sm:flex-row">
+  {/* Metronome controls */}
+</div>
+```
+
+### Border and Visual Separation
+
+- **Borders**: Use `border`, `border-t`, `border-b` for visual separation
+- **Padding**: Use consistent padding (`p-4`, etc.) for component spacing
+- **Relative positioning**: Use `relative` for positioned containers
+
+### Responsive Design
+
+- **Mobile-first**: Design for mobile first, then enhance for larger screens
+- **Breakpoints**: Use Tailwind breakpoints (sm: 640px, md: 768px, lg: 1024px, xl: 1280px)
+- **Flex direction**: Change flex direction responsively (e.g., `flex-col sm:flex-row`)
+- **Grid display**: Adjust grid display responsively (e.g., `grid-cols-16`)
+
+## Color and Theming
+
+- **Tailwind defaults**: Use Tailwind's default color palette
+- **No CSS variables**: This app doesn't use CSS variables for colors
+- **Utility classes**: Use Tailwind color utilities directly (e.g., `bg-white`, `text-black`, `border-black`)

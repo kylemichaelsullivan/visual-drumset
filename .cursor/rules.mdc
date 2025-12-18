@@ -1,0 +1,364 @@
+---
+alwaysApply: true
+---
+
+# Visual Drumset Project Rules
+
+## Core Principles
+
+- Write and review code like a senior developer
+- Challenge erroneous assumptions and inefficiencies
+- Use **Bun** for package management
+- Prefer `bun build` over `bun dev` for compilation
+- Use **TypeScript** with strict configuration
+- Follow **React 18** with **Vite** architecture
+- Use typographic apostrophe ' instead of straight apostrophe ' in ALL user-facing text
+
+## Package Management
+
+- **Package Manager**: Bun
+- **Build Command**: `bun build` (TypeScript compilation + Vite build)
+- **Development Command**: `bun dev` (Vite dev server with HMR)
+- **Lock File**: `bun.lock`
+
+## Development Scripts
+
+### Development Commands
+
+- **Development Server**: `bun dev` (Vite dev server with HMR)
+- **Production Build**: `bun build` (TypeScript compilation + Vite build)
+- **Preview Build**: `bun preview` (Preview production build locally)
+- **Linting**: `bun lint` (Run Biome linter)
+- **Lint Fix**: `bun lint:fix` (Run Biome linter and auto-fix)
+- **Formatting**: `bun format` (Format code with Biome)
+- **Format Check**: `bun format:check` (Check code format)
+- **Check All**: `bun check` (Run Biome formatter + linter)
+- **Check All Fix**: `bun check:write` (Run Biome formatter + linter and auto-fix)
+
+### Vite Benefits
+
+- **Fast HMR**: Hot Module Replacement for instant updates
+- **Optimized builds**: Production builds with code splitting
+- **TypeScript support**: Native TypeScript support
+- **Plugin ecosystem**: Rich plugin ecosystem (React, Tailwind CSS)
+
+## Project Structure
+
+```
+src/
+├── components/          # React components
+│   ├── App.tsx         # Main application component
+│   ├── Body.tsx        # Main content area with providers
+│   ├── Footer.tsx      # Site footer with copyright
+│   ├── displays/       # Visual display components
+│   │   ├── VisualDisplay.tsx
+│   │   ├── ShowBeat.tsx
+│   │   ├── Counts.tsx
+│   │   ├── Cymbals.tsx
+│   │   ├── Snares.tsx
+│   │   └── Kicks.tsx
+│   ├── edits/          # Edit mode components
+│   │   ├── EditBeat.tsx
+│   │   ├── EditButton.tsx
+│   │   ├── Cymbals.tsx
+│   │   ├── Snares.tsx
+│   │   └── Kicks.tsx
+│   ├── files/          # File I/O components
+│   │   ├── IO.tsx
+│   │   ├── Import.tsx
+│   │   ├── Export.tsx
+│   │   ├── BeatSelector.tsx
+│   │   ├── BeatSelectorSelect.tsx
+│   │   ├── BeatSelectorArrows.tsx
+│   │   ├── BeatSelectorApply.tsx
+│   │   └── Zod.tsx
+│   └── metronome/      # Metronome components
+│       ├── Metronome.tsx
+│       ├── Blinker.tsx
+│       └── Tempo.tsx
+├── context/            # React Context providers
+│   ├── Drums.tsx       # Drums context (cymbals, snares, kicks)
+│   └── Editing.tsx     # Editing context (edit mode state)
+├── types/              # TypeScript type definitions
+│   ├── beat.ts         # Beat type definitions
+│   └── counts.ts       # Count type definitions
+├── main.tsx            # Application entry point
+└── index.css           # Global styles and Tailwind imports
+
+public/
+├── beats/              # Beat JSON files
+│   ├── beat-1.json
+│   └── ...
+├── icons/              # Drum icon images
+│   ├── cymbal.png
+│   ├── snare.png
+│   └── bass.png
+└── ...
+```
+
+## Code Organization
+
+### Import Organization
+
+- **Defined order**: Follow specific import order, then alphabetize within each group
+- **Import order**:
+  1. React imports (from 'react')
+  2. Third-party libraries (alphabetically by source)
+  3. Internal project imports (alphabetically by path)
+  4. Type imports (alphabetically by path)
+- **Avoid React namespace**: Import React types directly, avoid `React.` prefix
+- **Named imports**: Use named imports for better tree-shaking
+
+#### Import Order Example
+
+```tsx
+// 1. React imports
+import { useState, useContext } from 'react';
+
+// 2. Third-party libraries (alphabetically by source)
+import clsx from 'clsx';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay } from '@fortawesome/free-solid-svg-icons';
+
+// 3. Internal project imports (alphabetically by path)
+import { useDrums } from '@/context/Drums';
+import { useEditing } from '@/context/Editing';
+import VisualDisplay from '@/components/displays/VisualDisplay';
+
+// 4. React type imports (alphabetically by path)
+import type { ReactNode } from 'react';
+
+// 5. Type imports (alphabetically by path)
+import type { beat } from '@/types/beat';
+import type { counts } from '@/types/counts';
+```
+
+### File Structure
+
+```tsx
+// Standard component file structure
+import clsx from 'clsx';
+
+import type { ReactNode } from 'react';
+
+type ComponentProps = {
+	// Required props
+	title: string;
+	// Optional props with defaults
+	variant?: 'primary' | 'secondary';
+	size?: 'sm' | 'md' | 'lg';
+	disabled?: boolean;
+	// Children
+	children?: ReactNode;
+};
+
+// Default export pattern (current working pattern)
+function ComponentName({
+	title,
+	variant = 'primary',
+	size = 'md',
+	disabled = false,
+	children,
+}: ComponentProps) {
+	return (
+		<div
+			className={clsx(
+				'ComponentName base-classes',
+				variant === 'secondary' && 'secondary-classes',
+				size === 'lg' && 'large-classes',
+				disabled && 'disabled-classes',
+			)}
+		>
+			{children}
+		</div>
+	);
+}
+
+export default ComponentName;
+
+// Alternative: forwardRef pattern for components needing DOM refs
+import { forwardRef } from 'react';
+
+const ComponentName = forwardRef<HTMLDivElement, ComponentProps>(
+	(
+		{ title, variant = 'primary', size = 'md', disabled = false, children },
+		ref,
+	) => {
+		return (
+			<div
+				className={clsx(
+					'ComponentName base-classes',
+					variant === 'secondary' && 'secondary-classes',
+					size === 'lg' && 'large-classes',
+					disabled && 'disabled-classes',
+				)}
+				ref={ref}
+			>
+				{children}
+			</div>
+		);
+	},
+);
+
+ComponentName.displayName = 'ComponentName';
+
+export default ComponentName;
+```
+
+## State Management
+
+### Context Providers
+
+- **DrumsContext**: Manages drum beat patterns (cymbals, snares, kicks)
+  - Provider: `DrumsProvider`
+  - Hook: `useDrums()`
+  - State: `counts` type (4 beats × 4 subdivisions)
+
+- **EditingContext**: Manages edit/view mode toggle
+  - Provider: `EditingProvider`
+  - Hook: `useEditing()`
+  - Features: Listens for Escape key to exit edit mode
+
+### Local State
+
+- **useState**: Use for component-local state (e.g., metronome BPM, UI toggles)
+- **Context for shared state**: Use Context providers for state shared across multiple components
+
+## Type Definitions
+
+### Beat Types
+
+- **`count`**: `[boolean, boolean, boolean, boolean]` - Represents 1-e-&-a (4 subdivisions)
+- **`counts`**: `[count, count, count, count]` - Represents 1-2-3-4 (4 beats)
+- **`beat`**: `{ cymbals: counts, snares: counts, kicks: counts }` - Complete beat pattern
+- **`BeatSelect`**: `{ value: string, label: string }` - Beat selector option
+
+### Type Usage
+
+- Import types from `@/types/beat` and `@/types/counts`
+- Use strict typing - avoid `any` type
+- Prefer `type` over `interface` for component props
+
+## Styling Guidelines
+
+### CSS and Styling
+
+- **Avoid Tailwind margin/space classes**: Do not use `space-x-*` or `space-y-*` utilities - use flex/gap instead
+- **Use flex/gap spacing**: Use `flex flex-col gap-*` for vertical spacing and `flex items-center gap-*` for horizontal spacing
+- **No !important declarations**: Avoid using `!important` in CSS
+- **Tailwind utilities**: Use Tailwind utility classes for styling
+- **Custom CSS**: Use custom CSS classes for complex patterns (grid-cols-16, VisualDisplay responsive behavior)
+- **16-column grid**: Use `grid-cols-16` class for drum pattern grid layout
+
+### Spacing Examples
+
+```tsx
+// ❌ Avoid - margin-based spacing
+<div className='space-y-4'>
+  <Component />
+</div>
+
+// ✅ Good - flexbox-based spacing
+<div className='flex flex-col gap-4'>
+  <Component />
+</div>
+```
+
+### Grid Layout Example
+
+```tsx
+// ✅ Use 16-column grid for drum patterns
+<div className='grid grid-cols-16 gap-2'>
+  {beats.map((beat, index) => (
+    <BeatCell key={index} active={beat} />
+  ))}
+</div>
+```
+
+## React Best Practices
+
+- **TypeScript**: Avoid using `any` type, prefer proper typing
+- **Component optimization**: Use `memo` for performance optimization when appropriate
+- **Default exports**: Use default exports for components
+- **Context hooks**: Always wrap context hooks in error handling or use within provider
+- **Keyboard shortcuts**: Implement Escape key handling in EditingContext pattern
+
+### Context Hook Pattern
+
+```tsx
+// ✅ Context hooks throw errors if used outside provider
+import { useDrums } from '@/context/Drums';
+
+function Component() {
+  // This will throw if used outside DrumsProvider
+  const { cymbals, setCymbals } = useDrums();
+  // ...
+}
+```
+
+## Validation
+
+### Zod Validation
+
+- **Beat validation**: Use Zod schemas for validating beat data on import
+- **Schema location**: Beat validation schemas in `@/components/files/Zod`
+- **Runtime validation**: Validate all imported beat data with Zod before using
+
+### Validation Example
+
+```tsx
+// ✅ Validate beat data with Zod
+import { beatSchema } from '@/components/files/Zod';
+
+const validatedBeat = beatSchema.parse(importedData);
+```
+
+## Icons and Assets
+
+### Icon Guidelines
+
+- **FontAwesome**: Use FontAwesome icons via `@fortawesome/react-fontawesome`
+- **PNG icons**: Use PNG icons from `public/icons/` for drum visualization
+  - `cymbal.png` - Cymbal icon
+  - `snare.png` - Snare icon
+  - `bass.png` - Kick/bass icon
+- **Icon accessibility**: Include `aria-hidden='true'` for decorative icons
+
+### Asset Guidelines
+
+- **Beat files**: Place beat JSON files in `public/beats/` directory
+- **Image assets**: Place images in `public/` directory for static assets
+- **Asset organization**: Keep assets organized by type
+
+## Comments and Documentation
+
+### Comment Guidelines
+
+- **Minimal comments**: Limit comments to non-obvious functionality
+- **Purpose comments**: Comment on oddities that have non-obvious purposes
+- **Self-documenting code**: Write code that explains itself through clear naming and structure
+- **JSDoc**: Use JSDoc comments for complex props and functions
+
+## Communication Standards
+
+### Progress Updates
+
+- **Meaningful updates only**: Avoid inane progress updates and status reports
+- **Focus on substance**: Communicate actual progress, blockers, or decisions that matter
+- **No busy work updates**: Don't report on routine tasks or obvious progress
+- **Context matters**: Provide context when updates are necessary
+- **Efficiency**: Respect time by being concise and relevant
+
+### Documentation Standards
+
+- **Documentation directory**: Place all MD documentation in appropriate directories
+- **Usage examples**: Provide clear usage examples
+- **Props documentation**: Document all props with types and descriptions
+- **Context documentation**: Document context providers and hooks
+
+### Documentation Updates
+
+- **Substantive changes only**: Update documentation for meaningful changes
+- **Avoid trivial updates**: Don't update docs for minor formatting or obvious changes
+- **Focus on value**: Document decisions, patterns, and changes that provide value
+- **Clear purpose**: Ensure documentation updates serve a clear purpose

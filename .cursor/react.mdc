@@ -1,0 +1,433 @@
+---
+globs: **/*.tsx, **/*.ts
+exclude: **/__tests__/**, **/*.test.*, **/*.spec.*, **/context/**, **/types/**, **/components/**, **/*.css
+alwaysApply: false
+---
+
+# React Development Standards for Visual Drumset
+
+## Component Architecture
+
+### Single-Purpose Components
+
+- **One component per file**: Each file contains exactly one React component
+- **Bite-sized components**: Components should be focused and single-purpose (one thing == one component == one file)
+- **Descriptive naming**: Use PascalCase with descriptive names indicating visual purpose
+- **Component suffixes**: Use appropriate suffixes when needed (e.g., `Container`, `Panel`, `Button`, `Display`)
+
+### Component Guidelines
+
+- **TypeScript types**: Prefer `type` over `interface` for component props and data structures
+- **Default exports**: Export components as default exports using `export default`
+- **Import paths**: Use relative imports or `@/` alias (if configured) for component imports
+- **Props interface**: Define clear, typed props with descriptive names
+- **forwardRef usage**: Use `forwardRef` for components that need to expose DOM refs when needed
+
+## Performance Optimization
+
+### React.memo Usage
+
+- **Memoization criteria**: Apply `memo` to components with stable props or frequent re-renders when performance is a concern
+- **Current status**: Not currently used extensively - apply only when needed for performance optimization
+- **When to use**: Use for components that receive stable props and render frequently
+
+#### Memoization Guidelines
+
+```typescript
+// ✅ Use memo when component has stable props and frequent re-renders
+import { memo } from 'react';
+
+function ComponentName({ prop1, prop2 }: ComponentProps) {
+  return <div>{/* component content */}</div>;
+}
+
+export default memo(ComponentName);
+```
+
+**When to use React.memo:**
+
+- **UI components with stable props**: Components that receive props that don't change often
+- **Display components**: Components that render frequently but with the same data
+- **Metronome components**: Components that update frequently but with stable props
+
+**When NOT to use React.memo:**
+
+- **Layout components**: App, Body, Footer (these rarely re-render)
+- **Components with frequently changing props**: Components that receive new props on every render
+- **Simple components**: Components that are already fast enough
+
+#### Performance Optimization Patterns
+
+```typescript
+// ✅ useCallback for event handlers
+import { useCallback, useState } from 'react';
+
+function MetronomeComponent() {
+  const [isRunning, setIsRunning] = useState(false);
+
+  const toggleMetronome = useCallback(() => {
+    setIsRunning(prev => !prev);
+  }, []);
+
+  return (
+    <div>
+      <button onClick={toggleMetronome}>
+        {isRunning ? 'Stop' : 'Start'}
+      </button>
+    </div>
+  );
+}
+```
+
+```typescript
+// ✅ useMemo for expensive computations
+import { useMemo } from 'react';
+
+function BeatDisplayComponent({ beat }: BeatDisplayProps) {
+  // Memoize expensive calculations
+  const processedBeat = useMemo(() => {
+    return processBeatPattern(beat);
+  }, [beat]);
+
+  return <div>{/* render processed beat */}</div>;
+}
+```
+
+### Performance Considerations
+
+### Memoization
+
+- **React.memo**: Use for components with stable props when performance is a concern
+- **useMemo**: Use for expensive computations (e.g., beat pattern processing, filtering)
+- **useCallback**: Use for event handlers passed as props to memoized children
+
+### Bundle Optimization
+
+- **Tree shaking**: Import only necessary components and utilities
+- **Dynamic imports**: Use for large components when appropriate
+- **Code splitting**: Leverage Vite's automatic code splitting
+
+## State Management
+
+### Context Providers
+
+The application uses React Context for global state management:
+
+#### DrumsContext
+
+- **Provider**: `DrumsProvider` (`@/context/Drums`)
+- **Hook**: `useDrums()` - Returns `{ cymbals, snares, kicks, setCymbals, setSnares, setKicks }`
+- **State**: Manages drum beat patterns as `counts` type (4 beats × 4 subdivisions)
+- **Usage**: Wrap components that need access to drum state
+
+```typescript
+// ✅ Use DrumsProvider for global drum state
+import { DrumsProvider, useDrums } from '@/context/Drums';
+
+// Provider usage
+<DrumsProvider>
+  <YourComponent />
+</DrumsProvider>
+
+// Hook usage
+const { cymbals, setCymbals } = useDrums();
+```
+
+#### EditingContext
+
+- **Provider**: `EditingProvider` (`@/context/Editing`)
+- **Hook**: `useEditing()` - Returns `{ isEditing, setIsEditing }`
+- **State**: Manages edit/view mode toggle
+- **Features**: Listens for Escape key to exit edit mode
+- **Usage**: Wrap components that need editing state
+
+```typescript
+// ✅ Use EditingProvider for edit mode state
+import { EditingProvider, useEditing } from '@/context/Editing';
+
+// Provider usage
+<EditingProvider>
+  <YourComponent />
+</EditingProvider>
+
+// Hook usage
+const { isEditing, setIsEditing } = useEditing();
+```
+
+### Local State
+
+- **useState**: Use for component-local state (e.g., metronome BPM, UI toggles)
+- **State lifting**: Lift state up when multiple components need access (use Context if needed globally)
+- **State organization**: Keep state as close to where it's used as possible
+
+#### State Guidelines
+
+```typescript
+// ✅ Use useState for local component state
+import { useState } from 'react';
+
+function Metronome() {
+  const [bpm, setBpm] = useState(120);
+  const [isRunning, setIsRunning] = useState(false);
+
+  return (
+    <div>
+      <input 
+        type="number" 
+        value={bpm} 
+        onChange={(e) => setBpm(Number(e.target.value))} 
+      />
+      <button onClick={() => setIsRunning(!isRunning)}>
+        {isRunning ? 'Stop' : 'Start'}
+      </button>
+    </div>
+  );
+}
+```
+
+```typescript
+// ✅ Use Context for shared state across multiple components
+import { useDrums } from '@/context/Drums';
+
+function EditBeat() {
+  const { cymbals, setCymbals } = useDrums();
+  
+  const toggleCymbal = (beatIndex: number, subIndex: number) => {
+    const newCymbals = [...cymbals];
+    newCymbals[beatIndex][subIndex] = !newCymbals[beatIndex][subIndex];
+    setCymbals(newCymbals);
+  };
+  
+  return <div>{/* edit interface */}</div>;
+}
+```
+
+## Type Definitions
+
+### Beat Types
+
+The application uses structured types for beats:
+
+```typescript
+// src/types/counts.ts
+type count = [boolean, boolean, boolean, boolean];  // 1-e-&-a (4 subdivisions)
+type counts = [count, count, count, count];         // 1-2-3-4 (4 beats)
+
+// src/types/beat.ts
+type beat = {
+	cymbals: counts;
+	snares: counts;
+	kicks: counts;
+};
+
+type BeatSelect = {
+	value: string;
+	label: string;
+};
+```
+
+### Type Usage
+
+```typescript
+// ✅ Import and use types
+import type { beat } from '@/types/beat';
+import type { counts } from '@/types/counts';
+
+function BeatProcessor({ beat }: { beat: beat }) {
+  // Type-safe beat processing
+  return <div>{/* render beat */}</div>;
+}
+```
+
+## Accessibility Standards
+
+### ARIA and Semantics
+
+- **Proper ARIA labels**: Include appropriate ARIA labels and roles
+- **Keyboard navigation**: Support keyboard navigation with proper tabIndex
+- **Focus management**: Implement proper focus management
+- **Screen reader compatibility**: Ensure screen reader compatibility
+- **Color contrast**: Maintain proper color contrast ratios
+- **Semantic HTML**: Use semantic HTML structure (main, footer, button, etc.)
+
+### Keyboard Shortcuts
+
+- **Escape key**: Used to exit edit mode (implemented in EditingContext)
+- **Tab navigation**: Ensure all interactive elements are keyboard accessible
+- **Enter/Space**: Support standard button activation
+
+### Error Handling
+
+- **Error message association**: Associate error messages with form fields when applicable
+- **Loading state announcements**: Announce loading states to screen readers when needed
+- **Error boundaries**: Implement error boundaries for graceful error handling when needed
+- **Defensive programming**: Include validation and fallbacks for data integrity
+- **Zod validation**: Use Zod schemas for runtime validation of beat data
+
+## Visual Drumset-Specific Guidelines
+
+### Display Components
+
+- **VisualDisplay**: Container for beat display/edit mode switching
+- **ShowBeat**: Visual representation of the current beat pattern
+- **Counts**: Displays beat counts (1-e-&-a) above the drum patterns
+- **Cymbals/Snares/Kicks**: Visual display of individual drum hits
+
+### Edit Components
+
+- **EditBeat**: Edit mode container for beat editing interface
+- **EditButton**: Toggle button for switching between edit/view modes
+- **Cymbals/Snares/Kicks (edits)**: Interactive editing components for each drum type
+
+### File I/O Components
+
+- **IO**: Container for Import/Export components
+- **Import**: Beat import functionality (JSON file upload)
+- **Export**: Beat export functionality (JSON file download)
+- **BeatSelector**: Beat selection and navigation components
+
+### Metronome Components
+
+- **Metronome**: Metronome container with BPM state
+- **Blinker**: Visual metronome blinker with start/stop controls
+- **Tempo**: Tempo control component (BPM input field)
+
+### Layout Components
+
+- **App**: Main application wrapper with Body and Footer
+- **Body**: Main content area with context providers and core components
+- **Footer**: Site footer with copyright information
+
+### Typography
+
+- **Typographic apostrophe**: Use ' instead of ' in all user-facing text
+- **Font styling**: Use Tailwind font utilities (`font-bold`, etc.)
+
+### Icons
+
+- **FontAwesome**: Use FontAwesome icons via `@fortawesome/react-fontawesome`
+- **Icon accessibility**: Include `aria-hidden='true'` for decorative icons
+- **PNG icons**: Use PNG icons from `public/icons/` for drum visualization (cymbal.png, snare.png, bass.png)
+
+### Styling
+
+- **Tailwind CSS**: Use Tailwind utility classes for styling (via `@tailwindcss/vite`)
+- **Custom CSS**: Use custom CSS classes for complex patterns (grid-cols-16, VisualDisplay styles)
+- **CSS variables**: Not currently used extensively - prefer Tailwind utilities
+- **Responsive design**: Use Tailwind responsive prefixes (sm:, md:, lg:, xl:)
+- **Grid layout**: Use `grid-cols-16` for 16-column drum pattern grid
+- **Flexbox spacing**: Use `flex flex-col gap-*` or `flex items-center gap-*` instead of `space-*` utilities
+
+#### Styling Patterns
+
+```typescript
+// ✅ Use Tailwind utilities with flex/gap
+<div className="flex flex-col gap-4">
+  <Component />
+</div>
+
+// ✅ Use 16-column grid for drum patterns
+<div className="grid grid-cols-16 gap-2">
+  {beats.map(beat => <BeatCell key={beat} />)}
+</div>
+
+// ✅ Use responsive design
+<div className="flex flex-col sm:flex-row gap-4">
+  <Component />
+</div>
+```
+
+## File Organization
+
+### Component Structure
+
+```
+src/components/
+├── App.tsx                    # Main application component
+├── Body.tsx                   # Main content area with providers
+├── Footer.tsx                 # Site footer with copyright
+├── displays/
+│   ├── VisualDisplay.tsx      # Container for beat display/edit mode
+│   ├── ShowBeat.tsx           # Visual representation of beat
+│   ├── Counts.tsx             # Beat count display (1-e-&-a)
+│   ├── Cymbals.tsx            # Cymbal display component
+│   ├── Snares.tsx             # Snare display component
+│   └── Kicks.tsx              # Kick/bass display component
+├── edits/
+│   ├── EditBeat.tsx           # Edit mode container
+│   ├── EditButton.tsx         # Toggle button for edit/view mode
+│   ├── Cymbals.tsx            # Cymbal editing component
+│   ├── Snares.tsx             # Snare editing component
+│   └── Kicks.tsx              # Kick/bass editing component
+├── files/
+│   ├── IO.tsx                 # Container for Import/Export
+│   ├── Import.tsx             # Beat import functionality
+│   ├── Export.tsx             # Beat export functionality
+│   ├── BeatSelector.tsx       # Main beat selector container
+│   ├── BeatSelectorSelect.tsx # Beat dropdown selector
+│   ├── BeatSelectorArrows.tsx # Navigation arrows
+│   ├── BeatSelectorApply.tsx  # Apply selected beat button
+│   └── Zod.tsx                # Zod schema for beat validation
+└── metronome/
+    ├── Metronome.tsx          # Metronome container component
+    ├── Blinker.tsx            # Visual metronome blinker
+    └── Tempo.tsx              # Tempo control (BPM input)
+```
+
+### Context Structure
+
+```
+src/context/
+├── Drums.tsx                  # Drums context provider (cymbals, snares, kicks)
+└── Editing.tsx                # Editing context provider (edit mode state)
+```
+
+### Type Structure
+
+```
+src/types/
+├── beat.ts                    # Beat type definitions (beat, BeatSelect)
+└── counts.ts                  # Count type definitions (counts, count)
+```
+
+### Entry Point
+
+```
+src/
+├── main.tsx                   # Application entry point with React.StrictMode
+├── index.css                  # Global styles and Tailwind imports
+└── scripts.ts                 # Additional scripts if needed
+```
+
+## Development Workflow
+
+### Scripts
+
+- **`bun dev`**: Start development server with HMR
+- **`bun build`**: Build for production
+- **`bun lint`**: Run Biome linter
+- **`bun lint:fix`**: Run Biome linter and auto-fix
+- **`bun format`**: Format code with Biome
+- **`bun format:check`**: Check code format
+- **`bun check`**: Run Biome formatter + linter
+- **`bun check:write`**: Run Biome formatter + linter and auto-fix
+- **`bun preview`**: Preview production build
+
+### Code Quality
+
+- **TypeScript**: Strict type checking enabled (`strict: true`, `noUnusedLocals`, `noUnusedParameters`)
+- **Biome**: Code formatting, linting, and import organization (replaces ESLint + Prettier)
+- **Import organization**: Use relative imports or `@/` alias if configured
+
+### Build Tooling
+
+- **Vite**: Build tool with React plugin and Tailwind CSS integration
+- **React Fast Refresh**: Enabled via `@vitejs/plugin-react`
+- **Tailwind CSS**: Integrated via `@tailwindcss/vite` plugin
+
+### Testing
+
+- **Component testing**: Test components with React Testing Library when needed
+- **Context testing**: Test context providers and hooks when needed
+- **Accessibility testing**: Test accessibility features when needed
+- **Beat validation**: Test Zod schema validation for beat imports/exports

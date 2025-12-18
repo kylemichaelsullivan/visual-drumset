@@ -1,0 +1,400 @@
+---
+globs: **/components/**/*.tsx
+exclude: **/__tests__/**, **/*.test.*, **/*.spec.*
+alwaysApply: false
+---
+
+# Visual Drumset Component Development Standards
+
+## File Organization
+
+```
+src/components/
+├── App.tsx                    # Main application component with Body and Footer
+├── Body.tsx                   # Main content area with providers and components
+├── Footer.tsx                 # Site footer with copyright
+├── displays/
+│   ├── VisualDisplay.tsx      # Container for beat display/edit mode
+│   ├── ShowBeat.tsx           # Visual representation of the current beat
+│   ├── Counts.tsx             # Beat count display (1-e-&-a)
+│   ├── Cymbals.tsx            # Cymbal display component
+│   ├── Snares.tsx             # Snare display component
+│   └── Kicks.tsx              # Kick/bass display component
+├── edits/
+│   ├── EditBeat.tsx           # Edit mode container for beat editing
+│   ├── EditButton.tsx         # Toggle button for edit/view mode
+│   ├── Cymbals.tsx            # Cymbal editing component
+│   ├── Snares.tsx             # Snare editing component
+│   └── Kicks.tsx              # Kick/bass editing component
+├── files/
+│   ├── IO.tsx                 # Container for Import/Export components
+│   ├── Import.tsx             # Beat import functionality
+│   ├── Export.tsx             # Beat export functionality
+│   ├── BeatSelector.tsx       # Main beat selector container
+│   ├── BeatSelectorSelect.tsx # Beat dropdown selector
+│   ├── BeatSelectorArrows.tsx # Navigation arrows for beats
+│   ├── BeatSelectorApply.tsx  # Apply selected beat button
+│   └── Zod.tsx                # Zod schema for beat validation
+└── metronome/
+    ├── Metronome.tsx          # Metronome container component
+    ├── Blinker.tsx            # Visual metronome blinker
+    └── Tempo.tsx              # Tempo control (BPM input)
+
+src/context/
+├── Drums.tsx                  # Drums context provider (cymbals, snares, kicks state)
+└── Editing.tsx                # Editing context provider (edit mode state)
+
+src/types/
+├── beat.ts                    # Beat type definitions (beat, BeatSelect)
+└── counts.ts                  # Count type definitions (counts, count)
+```
+
+## Component Structure Guidelines
+
+### Avoid Superfluous Wrappers
+
+- **Remove unnecessary wrapper divs**: Don't create wrapper divs that add DOM complexity without benefit
+- **Simplify component structure**: Remove redundant nesting when possible
+- **Keep meaningful wrappers**: Retain wrappers that serve styling, semantic, or organizational purposes
+
+### Spacing Guidelines
+
+- **Avoid `space-*` utilities**: Don't use `space-x-*` or `space-y-*` utilities - they rely on margin-based spacing
+- **Use flex/gap spacing**: Use `flex flex-col gap-*` for vertical spacing and `flex items-center gap-*` for horizontal spacing
+- **Maintain visual consistency**: All spacing changes should preserve the original visual appearance
+
+#### Spacing Examples
+
+```tsx
+// ❌ Avoid - margin-based spacing
+<div className='space-y-4'>
+  <Component />
+</div>
+
+// ✅ Good - flexbox-based spacing
+<div className='flex flex-col gap-4'>
+  <Component />
+</div>
+```
+
+```tsx
+// ❌ Avoid - redundant wrapper
+<div className='Container'>
+  <div className='flex flex-col gap-4'>
+    <Component />
+  </div>
+</div>
+
+// ✅ Good - simplified structure
+<div className='Container flex flex-col gap-4'>
+  <Component />
+</div>
+```
+
+## Context Providers
+
+The application uses React Context for state management:
+
+### DrumsContext
+
+- **Provider**: `DrumsProvider` (`@/context/Drums`)
+- **Hook**: `useDrums()` - Returns `{ cymbals, snares, kicks, setCymbals, setSnares, setKicks }`
+- **State**: Manages drum beat patterns as `counts` type (4 beats × 4 subdivisions)
+- **Usage**: Wrap components that need access to drum state
+
+```tsx
+import { DrumsProvider } from '@/context/Drums';
+import { useDrums } from '@/context/Drums';
+
+// Provider usage
+<DrumsProvider>
+  <YourComponent />
+</DrumsProvider>
+
+// Hook usage
+const { cymbals, setCymbals } = useDrums();
+```
+
+### EditingContext
+
+- **Provider**: `EditingProvider` (`@/context/Editing`)
+- **Hook**: `useEditing()` - Returns `{ isEditing, setIsEditing }`
+- **State**: Manages edit/view mode toggle
+- **Features**: Listens for Escape key to exit edit mode
+- **Usage**: Wrap components that need editing state
+
+```tsx
+import { EditingProvider } from '@/context/Editing';
+import { useEditing } from '@/context/Editing';
+
+// Provider usage
+<EditingProvider>
+  <YourComponent />
+</EditingProvider>
+
+// Hook usage
+const { isEditing, setIsEditing } = useEditing();
+```
+
+## Component Guidelines
+
+### Single-Purpose Components
+
+- **One component per file**: Each file contains exactly one React component
+- **Bite-sized components**: Components should be focused and single-purpose (one thing == one component == one file)
+- **Descriptive naming**: Use PascalCase with descriptive names indicating visual purpose
+- **Component suffixes**: Use appropriate suffixes when needed (e.g., `Container`, `Panel`, `Button`, `Display`)
+
+### Component Structure
+
+```tsx
+// Pattern 1: Function component with default export (most common)
+import clsx from 'clsx';
+
+import type { ReactNode } from 'react';
+
+type ComponentProps = {
+	title: string;
+	variant?: 'primary' | 'secondary';
+	children?: ReactNode;
+};
+
+function ComponentName({
+	title,
+	variant = 'primary',
+	children,
+}: ComponentProps) {
+	return (
+		<div
+			className={clsx(
+				'ComponentName base-classes',
+				variant === 'secondary' && 'secondary-classes',
+			)}
+		>
+			{children}
+		</div>
+	);
+}
+
+export default ComponentName;
+
+// Pattern 2: forwardRef component with default export (for DOM refs)
+import { forwardRef } from 'react';
+
+const ComponentName = forwardRef<HTMLDivElement, ComponentProps>(
+	({ title, variant = 'primary', children }, ref) => {
+		return (
+			<div
+				ref={ref}
+				className={clsx(
+					'ComponentName base-classes',
+					variant === 'secondary' && 'secondary-classes',
+				)}
+			>
+				{children}
+			</div>
+		);
+	},
+);
+
+ComponentName.displayName = 'ComponentName';
+
+export default ComponentName;
+```
+
+### Component Guidelines
+
+- **TypeScript types**: Prefer `type` over `interface` for component props and data structures
+- **Default exports**: Export components as default exports using `export default`
+- **Import paths**: Use relative imports or `@/` alias (if configured) for component imports
+- **Props interface**: Define clear, typed props with descriptive names
+- **forwardRef usage**: Use `forwardRef` for components that need to expose DOM refs
+
+## Component Patterns
+
+### Layout Components
+
+- **App** (`@/components/App`) - Main application wrapper with Body and Footer
+- **Body** (`@/components/Body`) - Main content area with context providers and core components
+- **Footer** (`@/components/Footer`) - Site footer with copyright information
+
+### Display Components
+
+- **VisualDisplay** (`@/components/displays/VisualDisplay`) - Container for beat display/edit mode switching
+- **ShowBeat** (`@/components/displays/ShowBeat`) - Visual representation of the current beat pattern
+- **Counts** (`@/components/displays/Counts`) - Displays beat counts (1-e-&-a) above the drum patterns
+- **Cymbals** (`@/components/displays/Cymbals`) - Visual display of cymbal hits
+- **Snares** (`@/components/displays/Snares`) - Visual display of snare hits
+- **Kicks** (`@/components/displays/Kicks`) - Visual display of kick/bass hits
+
+### Edit Components
+
+- **EditBeat** (`@/components/edits/EditBeat`) - Edit mode container for beat editing interface
+- **EditButton** (`@/components/edits/EditButton`) - Toggle button for switching between edit/view modes
+- **Cymbals** (`@/components/edits/Cymbals`) - Interactive cymbal editing component
+- **Snares** (`@/components/edits/Snares`) - Interactive snare editing component
+- **Kicks** (`@/components/edits/Kicks`) - Interactive kick/bass editing component
+
+### File I/O Components
+
+- **IO** (`@/components/files/IO`) - Container for Import/Export components
+- **Import** (`@/components/files/Import`) - Beat import functionality (JSON file upload)
+- **Export** (`@/components/files/Export`) - Beat export functionality (JSON file download)
+- **BeatSelector** (`@/components/files/BeatSelector`) - Main beat selector container
+- **BeatSelectorSelect** (`@/components/files/BeatSelectorSelect`) - Dropdown for selecting beats
+- **BeatSelectorArrows** (`@/components/files/BeatSelectorArrows`) - Navigation arrows for beat selection
+- **BeatSelectorApply** (`@/components/files/BeatSelectorApply`) - Apply selected beat button
+- **Zod** (`@/components/files/Zod`) - Zod schema definitions for beat validation
+
+### Metronome Components
+
+- **Metronome** (`@/components/metronome/Metronome`) - Metronome container with BPM state
+- **Blinker** (`@/components/metronome/Blinker`) - Visual metronome blinker with start/stop controls
+- **Tempo** (`@/components/metronome/Tempo`) - Tempo control component (BPM input field)
+
+## Type Definitions
+
+### Beat Types
+
+The application uses structured types for beats:
+
+```tsx
+// src/types/counts.ts
+type count = [boolean, boolean, boolean, boolean];  // 1-e-&-a (4 subdivisions)
+type counts = [count, count, count, count];         // 1-2-3-4 (4 beats)
+
+// src/types/beat.ts
+type beat = {
+	cymbals: counts;
+	snares: counts;
+	kicks: counts;
+};
+
+type BeatSelect = {
+	value: string;
+	label: string;
+};
+```
+
+### Usage Examples
+
+```tsx
+import type { beat } from '@/types/beat';
+import type { counts } from '@/types/counts';
+
+// Example beat structure
+const exampleBeat: beat = {
+	cymbals: [
+		[true, false, true, false],   // Beat 1
+		[true, false, true, false],   // Beat 2
+		[true, false, true, false],   // Beat 3
+		[true, false, true, false],   // Beat 4
+	],
+	snares: [
+		[false, false, false, false], // Beat 1
+		[true, false, false, false],  // Beat 2
+		[false, false, false, false], // Beat 3
+		[true, false, false, false],  // Beat 4
+	],
+	kicks: [
+		[true, false, false, false],  // Beat 1
+		[false, false, false, false], // Beat 2
+		[true, false, false, false],  // Beat 3
+		[false, false, false, false], // Beat 4
+	],
+};
+```
+
+## Component Best Practices
+
+### Performance
+
+- **React.memo**: Use for components with stable props when needed
+- **useMemo**: Use for expensive computations
+- **useCallback**: Use for event handlers passed as props
+- **Tree shaking**: Import only necessary components
+
+### Accessibility
+
+- **ARIA labels**: Include appropriate ARIA labels and roles
+- **Keyboard navigation**: Support keyboard navigation for interactive elements (e.g., Escape key to exit edit mode)
+- **Focus management**: Implement proper focus management
+- **Screen reader compatibility**: Ensure screen reader compatibility
+- **Color contrast**: Maintain proper color contrast ratios
+- **Semantic HTML**: Use semantic HTML structure (main, footer, button, etc.)
+
+### Error Handling
+
+- **Defensive programming**: Include validation and fallbacks for data integrity
+- **Zod validation**: Use Zod schemas for runtime validation of beat data
+- **Graceful degradation**: Handle missing or invalid beat data gracefully
+- **Context error handling**: Context hooks throw errors if used outside provider - wrap appropriately
+
+### SVG Icons
+
+- **FontAwesome**: Use FontAwesome icons via `@fortawesome/react-fontawesome`
+- **Icon accessibility**: Include `aria-hidden='true'` for decorative icons
+
+## Styling Guidelines
+
+### Tailwind CSS
+
+- **Utility-first**: Use Tailwind utility classes for styling
+- **Custom classes**: Use custom CSS classes for complex or reusable patterns
+- **Responsive design**: Use Tailwind responsive prefixes (sm:, md:, lg:, xl:)
+- **Border utilities**: Use `border`, `border-t`, `border-b` for visual separation
+
+### Class Management
+
+- **clsx**: Use `clsx` for conditional class names
+- **Component classes**: Include component name as base class for scoping
+
+```tsx
+import clsx from 'clsx';
+
+<div
+  className={clsx(
+    'ComponentName base-classes',
+    condition && 'conditional-classes',
+    variant === 'primary' && 'primary-classes',
+  )}
+>
+```
+
+### Layout Patterns
+
+- **Flexbox**: Use `flex flex-col` for vertical layouts, `flex flex-row` for horizontal
+- **Gap spacing**: Use `gap-*` utilities with flex containers for spacing
+- **Centering**: Use `justify-center`, `items-center` for centering
+- **Max width**: Use `max-w-screen-xl` for content containers
+- **Padding**: Use `p-4` or similar for consistent padding
+
+## Typography
+
+- **Typographic apostrophe**: Use ' instead of ' in all user-facing text
+- **Font styling**: Use Tailwind font utilities (`font-bold`, etc.)
+
+## Component Testing
+
+### Unit Testing
+
+- **Component rendering**: Test component rendering with different props
+- **User interactions**: Test user interactions and callbacks
+- **Accessibility features**: Test accessibility features
+- **Context integration**: Test components with context providers
+
+### Integration Testing
+
+- **Display/edit mode**: Test switching between display and edit modes
+- **Beat editing**: Test beat pattern editing functionality
+- **File I/O**: Test beat import/export functionality
+- **Metronome**: Test metronome start/stop and tempo changes
+- **Context state**: Test context state updates across components
+
+### Testing Commands
+
+- Use `bun dev` for development server
+- Use `bun build` for production build
+- Use `bun lint` for linting
+- Use `bun format` for formatting code
+- Use `bun format:check` for checking code format
