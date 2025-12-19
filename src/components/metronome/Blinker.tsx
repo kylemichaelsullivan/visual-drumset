@@ -1,6 +1,7 @@
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSounds } from '@/context/useSounds';
 import type { Dispatch, SetStateAction } from 'react';
 
 type BlinkerProps = {
@@ -14,6 +15,7 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 	const [isLit, setIsLit] = useState(false);
 	const audioContextRef = useRef<AudioContext | null>(null);
 	const positionRef = useRef({ beat: 0, subdivision: 0 });
+	const { isMuted } = useSounds();
 
 	const getAudioContext = useCallback(() => {
 		if (!audioContextRef.current) {
@@ -23,6 +25,8 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 	}, []);
 
 	const beep = useCallback(() => {
+		if (isMuted) return;
+
 		try {
 			const context = getAudioContext();
 
@@ -39,10 +43,10 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 			o.connect(context.destination);
 			o.start();
 			o.stop(context.currentTime + 0.1);
-		} catch (error) {
+		} catch {
 			// Silently handle audio errors
 		}
-	}, [getAudioContext]);
+	}, [getAudioContext, isMuted]);
 
 	const flash = useCallback(() => {
 		setIsLit(true);
