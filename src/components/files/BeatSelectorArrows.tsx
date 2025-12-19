@@ -1,5 +1,6 @@
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getButtonClass } from '@/scripts';
 
 type BeatSelectorArrowsProps = {
 	handleClick: (direction: 'L' | 'R') => void;
@@ -11,7 +12,7 @@ function BeatSelectorArrows({ handleClick }: BeatSelectorArrowsProps) {
 			<div className='flex justify-between px-4'>
 				<button
 					type='button'
-					className='bg-gray-100 border border-black px-2 transition-colors duration-300 hover:bg-gray-300 hover:ring-1'
+					className={getButtonClass(true)}
 					title='Previous Beat'
 					onClick={() => handleClick('L')}
 				>
@@ -20,7 +21,7 @@ function BeatSelectorArrows({ handleClick }: BeatSelectorArrowsProps) {
 
 				<button
 					type='button'
-					className='bg-gray-100 border border-black px-2 transition-colors duration-300 hover:bg-gray-300 hover:ring-1'
+					className={getButtonClass(true)}
 					title='Next Beat'
 					onClick={() => handleClick('R')}
 				>

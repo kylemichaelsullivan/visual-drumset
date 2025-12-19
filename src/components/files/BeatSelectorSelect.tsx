@@ -18,6 +18,7 @@ function BeatSelectorSelect({
 			title='Choose Beat'
 			value={selectedBeat}
 			onChange={handleChange}
+			id='BeatSelectorSelect'
 		>
 			{beats.map((option: BeatSelect) => (
 				<option key={option.value} value={option.value}>
