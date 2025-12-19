@@ -119,24 +119,7 @@ function BeatPlayer({ playSound }: BeatPlayerProps) {
 
 		const position = { beat: currentBeat, subdivision: currentSubdivision };
 
-		// When transitioning from stopped to running, initialize and play sounds at start
-		if (!prevIsRunningRef.current) {
-			prevPositionRef.current = position;
-			prevIsRunningRef.current = true;
-			// Play sounds at initial position (0, 0) if there are drums
-			if (cymbals[position.beat]?.[position.subdivision]) {
-				playSound('cymbal');
-			}
-			if (snares[position.beat]?.[position.subdivision]) {
-				playSound('snare');
-			}
-			if (kicks[position.beat]?.[position.subdivision]) {
-				playSound('bass');
-			}
-			return;
-		}
-
-		// Only play if position actually changed
+		// Skip if position hasn't actually changed
 		if (
 			prevPositionRef.current &&
 			prevPositionRef.current.beat === position.beat &&
@@ -145,7 +128,11 @@ function BeatPlayer({ playSound }: BeatPlayerProps) {
 			return;
 		}
 
+		// Update tracking
 		prevPositionRef.current = position;
+		if (!prevIsRunningRef.current) {
+			prevIsRunningRef.current = true;
+		}
 
 		// Check each drum type and play if there's a hit at this position
 		if (cymbals[position.beat]?.[position.subdivision]) {
