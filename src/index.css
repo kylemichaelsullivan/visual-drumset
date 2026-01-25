@@ -33,6 +33,12 @@ input[type='checkbox'] {
 	display: none;
 }
 
+.VisualDisplay .IconButton {
+	max-width: 5vw;
+	max-height: 10vw;
+	margin-inline: auto;
+}
+
 .VisualDisplay.isPlaying .Icon img {
 	filter: grayscale(1);
 }

@@ -6,7 +6,7 @@ type BeatSelectorApplyProps = {
 
 function BeatSelectorApply({ handleClick }: BeatSelectorApplyProps) {
 	return (
-		<div className='BeatSelectorApply'>
+		<div className='BeatSelectorApply text-center'>
 			<button
 				type='button'
 				className={getButtonClass()}

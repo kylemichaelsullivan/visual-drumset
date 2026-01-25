@@ -92,16 +92,16 @@ function BeatSelector() {
 	};
 
 	return (
-		<div className='BeatSelector flex gap-2'>
-			<div className='flex flex-col flex-auto gap-2'>
-				<BeatSelectorSelect
-					beats={beats}
-					selectedBeat={selectedBeat}
-					handleChange={(e) => handleBeatChange(e)}
-				/>
+		<div className='BeatSelector flex flex-col gap-4'>
+			<BeatSelectorSelect
+				beats={beats}
+				selectedBeat={selectedBeat}
+				handleChange={(e) => handleBeatChange(e)}
+			/>
+			<div className='flex flex-col flex-auto gap-4 sm:flex-row'>
 				<BeatSelectorArrows handleClick={handleBeatArrow} />
+				<BeatSelectorApply handleClick={applyBeat} />
 			</div>
-			<BeatSelectorApply handleClick={applyBeat} />
 		</div>
 	);
 }

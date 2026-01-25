@@ -7,7 +7,7 @@ type BeatSelectorArrowsProps = {
 
 function BeatSelectorArrows({ handleClick }: BeatSelectorArrowsProps) {
 	return (
-		<div className='BeatSelectorArrows'>
+		<div className='BeatSelectorArrows flex-auto text-center'>
 			<div className='flex justify-between px-4'>
 				<IconButton
 					icon='skip-back'
