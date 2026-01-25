@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import Export from './Export';
 import Import from './Import';
 
@@ -8,7 +9,10 @@ type ContentIOProps = {
 function ContentIO({ isOpen }: ContentIOProps) {
 	return (
 		<div
-			className={`ContentIO flex flex-col gap-4 w-full ${!isOpen ? 'hidden' : ''}`}
+			className={clsx(
+				'ContentIO flex flex-col gap-4 w-full',
+				!isOpen && 'hidden'
+			)}
 		>
 			<Import />
 			<Export />

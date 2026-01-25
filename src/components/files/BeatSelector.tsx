@@ -23,7 +23,18 @@ function BeatSelector() {
 		setSelectedBeat(e.target.value);
 	};
 
-	const handleBeatArrow = async (direction: 'L' | 'R') => {
+	const selectAndApplyRandomBeat = async () => {
+		const randomIndex = Math.floor(Math.random() * beats.length);
+		setSelectedBeat(beats[randomIndex].value);
+		await fetchAndApplyBeat(beats[randomIndex].value);
+	};
+
+	const handleBeatArrow = async (direction: 'L' | 'R' | 'random') => {
+		if (direction === 'random') {
+			await selectAndApplyRandomBeat();
+			return;
+		}
+
 		const initialIndex = beats.findIndex((beat) => beat.value === selectedBeat);
 		const finalIndex =
 			direction === 'L'
@@ -39,9 +50,7 @@ function BeatSelector() {
 
 	const applyBeat = async () => {
 		if (selectedBeat === 'random') {
-			const randomBeat = Math.floor(Math.random() * 42);
-			setSelectedBeat(beats[randomBeat].value);
-			await fetchAndApplyBeat(beats[randomBeat].value);
+			await selectAndApplyRandomBeat();
 			return;
 		}
 

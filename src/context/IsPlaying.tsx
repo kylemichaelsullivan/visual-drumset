@@ -9,6 +9,8 @@ export type IsPlayingContextType = {
 	setIsRunning: Dispatch<SetStateAction<boolean>>;
 	setBpm: Dispatch<SetStateAction<number>>;
 	setPosition: (beat: number, subdivision: number) => void;
+	decreaseTempo: () => void;
+	increaseTempo: () => void;
 };
 
 export const IsPlayingContext = createContext<IsPlayingContextType | undefined>(
@@ -25,10 +27,33 @@ export function IsPlayingProvider({ children }: IsPlayingProviderProps) {
 	const [currentBeat, setCurrentBeat] = useState(0);
 	const [currentSubdivision, setCurrentSubdivision] = useState(0);
 
+	const min = 40;
+	const max = 300;
+
 	const setPosition = useCallback((beat: number, subdivision: number) => {
 		setCurrentBeat(beat);
 		setCurrentSubdivision(subdivision);
 	}, []);
+
+	const roundToNearest5 = useCallback((value: number): number => {
+		return Math.round(value / 5) * 5;
+	}, []);
+
+	const decreaseTempo = useCallback(() => {
+		setBpm((currentBpm) => {
+			const rounded = roundToNearest5(currentBpm);
+			const newBpm = rounded - 5;
+			return Math.max(min, newBpm);
+		});
+	}, [roundToNearest5]);
+
+	const increaseTempo = useCallback(() => {
+		setBpm((currentBpm) => {
+			const rounded = roundToNearest5(currentBpm);
+			const newBpm = rounded + 5;
+			return Math.min(max, newBpm);
+		});
+	}, [roundToNearest5]);
 
 	return (
 		<IsPlayingContext.Provider
@@ -40,6 +65,8 @@ export function IsPlayingProvider({ children }: IsPlayingProviderProps) {
 				currentBeat,
 				currentSubdivision,
 				setPosition,
+				decreaseTempo,
+				increaseTempo,
 			}}
 		>
 			{children}

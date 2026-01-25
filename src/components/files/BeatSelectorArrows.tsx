@@ -1,32 +1,40 @@
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import IconButton from '@/components/IconButton';
 import { getButtonClass } from '@/scripts';
 
 type BeatSelectorArrowsProps = {
-	handleClick: (direction: 'L' | 'R') => void;
+	handleClick: (direction: 'L' | 'R' | 'random') => void;
 };
 
 function BeatSelectorArrows({ handleClick }: BeatSelectorArrowsProps) {
 	return (
 		<div className='BeatSelectorArrows'>
 			<div className='flex justify-between px-4'>
-				<button
-					type='button'
+				<IconButton
+					icon='skip-back'
+					filetype='svg'
 					className={getButtonClass(true)}
+					size='md'
 					title='Previous Beat'
 					onClick={() => handleClick('L')}
-				>
-					<FontAwesomeIcon icon={faArrowLeft} />
-				</button>
+				/>
 
-				<button
-					type='button'
+				<IconButton
+					icon='dice'
+					filetype='svg'
 					className={getButtonClass(true)}
+					size='lg'
+					title='Random Beat'
+					onClick={() => handleClick('random')}
+				/>
+
+				<IconButton
+					icon='skip-forward'
+					filetype='svg'
+					className={getButtonClass(true)}
+					size='md'
 					title='Next Beat'
 					onClick={() => handleClick('R')}
-				>
-					<FontAwesomeIcon icon={faArrowRight} />
-				</button>
+				/>
 			</div>
 		</div>
 	);

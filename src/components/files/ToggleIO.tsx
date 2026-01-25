@@ -1,5 +1,4 @@
-import { faFloppyDisk, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import IconButton from '../IconButton';
 
 type ToggleIOProps = {
 	isOpen: boolean;
@@ -8,14 +7,14 @@ type ToggleIOProps = {
 
 function ToggleIO({ isOpen, handleToggle }: ToggleIOProps) {
 	return (
-		<button
-			type='button'
-			className={`ToggleIO border border-transparent rounded-sm text-2xl w-10 h-10 hover:border-black`}
+		<IconButton
+			icon={isOpen ? 'close' : 'save'}
+			filetype='svg'
+			className='ToggleIO border border-transparent rounded-sm hover:border-black'
+			size='lg'
 			title={isOpen ? 'Close File Operations' : 'Open File Operations'}
 			onClick={handleToggle}
-		>
-			<FontAwesomeIcon icon={isOpen ? faTimes : faFloppyDisk} />
-		</button>
+		/>
 	);
 }
 

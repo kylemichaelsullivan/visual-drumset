@@ -1,4 +1,3 @@
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { useDrums } from '@/context/useDrums';
 import ButtonIO from './ButtonIO';
 
@@ -24,7 +23,7 @@ function Export() {
 
 	return (
 		<div className='Export flex justify-end'>
-			<ButtonIO action='export' icon={faDownload} onMouseDown={handleExport} />
+			<ButtonIO action='export' icon='download' onMouseDown={handleExport} />
 		</div>
 	);
 }

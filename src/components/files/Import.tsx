@@ -1,5 +1,5 @@
-import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
+import clsx from 'clsx';
 import { useDrums } from '@/context/useDrums';
 import { getButtonClass } from '@/scripts';
 import ButtonIO from './ButtonIO';
@@ -50,13 +50,13 @@ function Import() {
 		<div className='Import flex flex-col gap-2 items-end sm:flex-row sm:justify-end sm:items-center'>
 			<input
 				type='file'
-				className={`cursor-pointer ${getButtonClass(true)}`}
+				className={clsx('cursor-pointer', getButtonClass(true))}
 				accept='.json'
 				onChange={handleImport}
 				id='file-upload'
 			/>
 
-			<ButtonIO action='import' icon={faUpload} onMouseDown={handleUpload} />
+			<ButtonIO action='import' icon='upload' onMouseDown={handleUpload} />
 		</div>
 	);
 }

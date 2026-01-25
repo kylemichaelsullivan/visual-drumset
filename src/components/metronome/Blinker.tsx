@@ -1,8 +1,8 @@
-import { faPlay } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
 import { useSounds } from '@/context/useSounds';
 import type { Dispatch, SetStateAction } from 'react';
+import Icon from '@/components/Icon';
 
 type BlinkerProps = {
 	bpm: number;
@@ -113,12 +113,13 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 		>
 			{isRunning ? (
 				<div
-					className={`${
-						isLit ? 'bg-green-400' : 'bg-gray-200'
-					} rounded-full w-full h-full`}
+					className={clsx(
+						isLit ? 'bg-green-400' : 'bg-gray-200',
+						'rounded-full w-full h-full'
+					)}
 				/>
 			) : (
-				<FontAwesomeIcon icon={faPlay} />
+				<Icon icon='play' filetype='svg' size='sm' />
 			)}
 		</button>
 	);

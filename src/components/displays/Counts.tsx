@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import clsx from 'clsx';
 import { useIsPlaying } from '@/context/useIsPlaying';
 
 function Counts() {
@@ -9,38 +10,42 @@ function Counts() {
 			{Array.from({ length: 4 }, (_, beatIndex) => (
 				<Fragment key={`beat-${beatIndex + 1}`}>
 					<div
-						className={`Count text-center ${
+						className={clsx(
+							'Count text-center',
 							beatIndex === currentBeat && 0 === currentSubdivision
 								? 'text-gray-900 font-bold'
 								: 'text-gray-900'
-						}`}
+						)}
 					>
 						{beatIndex + 1}
 					</div>
 					<div
-						className={`Count text-center ${
+						className={clsx(
+							'Count text-center',
 							beatIndex === currentBeat && 1 === currentSubdivision
 								? 'text-gray-900 font-bold'
 								: 'text-gray-300'
-						}`}
+						)}
 					>
 						e
 					</div>
 					<div
-						className={`Count text-center ${
+						className={clsx(
+							'Count text-center',
 							beatIndex === currentBeat && 2 === currentSubdivision
 								? 'text-gray-900 font-bold'
 								: 'text-gray-500'
-						}`}
+						)}
 					>
 						&
 					</div>
 					<div
-						className={`Count text-center ${
+						className={clsx(
+							'Count text-center',
 							beatIndex === currentBeat && 3 === currentSubdivision
 								? 'text-gray-900 font-bold'
 								: 'text-gray-300'
-						}`}
+						)}
 					>
 						a
 					</div>

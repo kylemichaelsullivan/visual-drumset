@@ -1,10 +1,11 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import clsx from 'clsx';
+import Icon from '@/components/Icon';
 import { getButtonClass } from '@/scripts';
-import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import type { IconType } from '@/types/icon';
 
 interface ButtonIOProps {
 	action: 'import' | 'export';
-	icon: IconDefinition;
+	icon: IconType;
 	onMouseDown: () => void;
 }
 
@@ -14,12 +15,12 @@ function ButtonIO({ action, icon, onMouseDown }: ButtonIOProps) {
 	return (
 		<button
 			type='button'
-			className={`flex gap-2 items-center ${getButtonClass()}`}
+			className={clsx('flex gap-2 items-center', getButtonClass())}
 			title={`${Action} Beat (.json)`}
 			onMouseDown={onMouseDown}
 		>
 			<span>{Action}</span>
-			<FontAwesomeIcon icon={icon} />
+			<Icon icon={icon} filetype='svg' size='sm' />
 		</button>
 	);
 }

@@ -1,7 +1,8 @@
+import clsx from 'clsx';
 import { useDrums } from '@/context/useDrums';
 import { useIsPlaying } from '@/context/useIsPlaying';
 import { getBackgroundClass, getSubdivision } from '@/scripts';
-import Icon from './Icon';
+import DrumIcon from './DrumIcon';
 
 function Cymbals() {
 	const { cymbals } = useDrums();
@@ -12,13 +13,16 @@ function Cymbals() {
 			{cymbals.map((count, i) =>
 				count.map((division, j) => (
 					<div
-						className={`Cymbal ${getBackgroundClass(j)} text-center p-2 ${
-							i === currentBeat && j === currentSubdivision ? 'active' : ''
-						}`}
+						className={clsx(
+							'Cymbal',
+							getBackgroundClass(j),
+							'text-center p-2',
+							i === currentBeat && j === currentSubdivision && 'active'
+						)}
 						key={`${i}-${getSubdivision(j)}`}
 					>
 						{division && (
-							<Icon
+							<DrumIcon
 								icon='cymbal'
 								isActive={i === currentBeat && j === currentSubdivision}
 							/>
