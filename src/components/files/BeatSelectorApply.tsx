@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { getButtonClass } from '@/scripts';
 
 type BeatSelectorApplyProps = {
@@ -6,10 +7,10 @@ type BeatSelectorApplyProps = {
 
 function BeatSelectorApply({ handleClick }: BeatSelectorApplyProps) {
 	return (
-		<div className='BeatSelectorApply text-center'>
+		<div className='BeatSelectorApply flex-1 text-center'>
 			<button
 				type='button'
-				className={getButtonClass()}
+				className={clsx(getButtonClass(), 'min-w-28')}
 				title='Apply Beat'
 				onClick={handleClick}
 			>
