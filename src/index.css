@@ -14,8 +14,19 @@ a:focus-visible {
 }
 
 button,
-input[type='checkbox'] {
+input[type='checkbox'],
+select {
 	cursor: pointer;
+}
+
+.IconButton {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.IconButton .Icon {
+	margin: 0 auto;
 }
 
 .grid-cols-16 {
@@ -33,7 +44,7 @@ input[type='checkbox'] {
 	display: none;
 }
 
-.VisualDisplay .IconButton {
+.VisualDisplay :not(.Buttons) .IconButton {
 	max-width: 5vw;
 	max-height: 10vw;
 	margin-inline: auto;
@@ -106,10 +117,17 @@ input[type='checkbox'] {
 		grid-template-columns: repeat(16, minmax(0, 1fr));
 	}
 
-	.VisualDisplay .Counts .Count:nth-of-type(even),
-	.VisualDisplay .Cymbals .Cymbal:nth-of-type(even),
-	.VisualDisplay .Snares .Snare:nth-of-type(even),
-	.VisualDisplay .Kicks .Kick:nth-of-type(even) {
+	.VisualDisplay:not(.hide-16ths) .Counts .Count:nth-of-type(even),
+	.VisualDisplay:not(.hide-16ths) .Cymbals .Cymbal:nth-of-type(even),
+	.VisualDisplay:not(.hide-16ths) .Snares .Snare:nth-of-type(even),
+	.VisualDisplay:not(.hide-16ths) .Kicks .Kick:nth-of-type(even) {
 		display: block;
 	}
+}
+
+.VisualDisplay.hide-16ths .Counts .Count:nth-of-type(even),
+.VisualDisplay.hide-16ths .Cymbals .Cymbal:nth-of-type(even),
+.VisualDisplay.hide-16ths .Snares .Snare:nth-of-type(even),
+.VisualDisplay.hide-16ths .Kicks .Kick:nth-of-type(even) {
+	display: none;
 }
