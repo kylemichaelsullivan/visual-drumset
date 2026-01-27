@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useDrums } from '@/context/useDrums';
-import BeatSelectorApply from './BeatSelectorApply';
-import BeatSelectorArrows from './BeatSelectorArrows';
+import SkipLink from '@/components/SkipLink';
+import { useDrums } from '@/hooks/useDrums';
+import BeatSelectorActions from './BeatSelectorActions';
 import BeatSelectorSelect from './BeatSelectorSelect';
 import { isBeatValid } from './Zod';
 import type { SetStateAction } from 'react';
@@ -55,7 +55,7 @@ function BeatSelector() {
 		}
 
 		try {
-			const response = await fetch(`../../../beats/${selectedBeat}`);
+			const response = await fetch(`/beats/${selectedBeat}`);
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
@@ -75,7 +75,7 @@ function BeatSelector() {
 	};
 
 	const fetchAndApplyBeat = async (beatValue: string) => {
-		const response = await fetch(`../../../beats/${beatValue}`);
+		const response = await fetch(`/beats/${beatValue}`);
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
@@ -93,15 +93,17 @@ function BeatSelector() {
 
 	return (
 		<div className='BeatSelector flex flex-col gap-4'>
+			<SkipLink targetSelector='.IO' text='Skip to File I/O' />
+
 			<BeatSelectorSelect
 				beats={beats}
 				selectedBeat={selectedBeat}
 				handleChange={(e) => handleBeatChange(e)}
 			/>
-			<div className='flex flex-col flex-auto gap-4 sm:flex-row'>
-				<BeatSelectorArrows handleClick={handleBeatArrow} />
-				<BeatSelectorApply handleClick={applyBeat} />
-			</div>
+			<BeatSelectorActions
+				handleBeatArrow={handleBeatArrow}
+				applyBeat={applyBeat}
+			/>
 		</div>
 	);
 }

@@ -1,25 +1,26 @@
 import clsx from 'clsx';
-import EditButton from '@/components/displays/EditButton';
-import MuteButton from '@/components/displays/MuteButton';
+import Buttons from '@/components/displays/Buttons';
 import EditBeat from '@/components/edits/EditBeat';
-import { useEditing } from '@/context/useEditing';
-import { useIsPlaying } from '@/context/useIsPlaying';
+import { useButtonValues } from '@/hooks/useButtonValues';
+import { useIsPlaying } from '@/hooks/useIsPlaying';
+import SkipLink from '../SkipLink';
 import Counts from './Counts';
 import ShowBeat from './ShowBeat';
 
 function VisualDisplay() {
-	const { isEditing } = useEditing();
+	const { isDisplaying16ths, isEditing } = useButtonValues();
 	const { isRunning: isPlaying } = useIsPlaying();
 
 	return (
 		<div
 			className={clsx(
-				'VisualDisplay relative flex flex-col border p-4 pt-8',
-				isPlaying && 'isPlaying'
+				'VisualDisplay flex flex-col border',
+				isPlaying && 'isPlaying',
+				!isDisplaying16ths && 'hide-16ths'
 			)}
 		>
-			<MuteButton />
-			<EditButton />
+			<Buttons />
+			<SkipLink targetSelector='.Metronome' text='Skip to Metronome' />
 			<Counts />
 			{isEditing ? <EditBeat /> : <ShowBeat />}
 		</div>

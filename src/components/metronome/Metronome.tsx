@@ -1,24 +1,12 @@
-import { useIsPlaying } from '@/context/useIsPlaying';
-import Blinker from './Blinker';
-import ModifyTempoButton from './ModifyTempoButton';
-import Tempo from './Tempo';
+import SkipLink from '@/components/SkipLink';
+import MetronomeContent from './MetronomeContent';
 
 function Metronome() {
-	const { bpm, setBpm, isRunning, setIsRunning, setPosition } = useIsPlaying();
-
 	return (
-		<div className='Metronome relative flex flex-col justify-center gap-4 items-center border px-8 py-4 sm:flex-row'>
-			<ModifyTempoButton direction='decrease' />
+		<div className='Metronome flex flex-col gap-4'>
+			<SkipLink targetSelector='.BeatSelector' text='Skip to Beat Selector' />
 
-			<Blinker
-				bpm={bpm}
-				isRunning={isRunning}
-				setIsRunning={setIsRunning}
-				setPosition={setPosition}
-			/>
-			<Tempo bpm={bpm} setBpm={setBpm} />
-
-			<ModifyTempoButton direction='increase' />
+			<MetronomeContent />
 		</div>
 	);
 }
