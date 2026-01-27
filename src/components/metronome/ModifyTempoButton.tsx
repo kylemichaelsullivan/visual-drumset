@@ -1,7 +1,7 @@
 import clsx from 'clsx';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import Icon from '@/components/Icon';
-import { useIsPlaying } from '@/context/useIsPlaying';
+import { useIsPlaying } from '@/hooks/useIsPlaying';
 import type { IconType } from '@/types/icon';
 
 type ModifyTempoButtonProps = {
@@ -12,13 +12,16 @@ function ModifyTempoButton({ direction }: ModifyTempoButtonProps) {
 	const { decreaseTempo, increaseTempo } = useIsPlaying();
 	const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const handlerRef = useRef<() => void>(() => {});
 
-	const handleClick = direction === 'decrease' ? decreaseTempo : increaseTempo;
+	// Update the handler ref whenever the direction or handlers change
+	handlerRef.current = direction === 'decrease' ? decreaseTempo : increaseTempo;
+
 	const icon: IconType = direction === 'decrease' ? 'minus' : 'add';
 	const title = direction === 'decrease' ? 'Decrease Tempo' : 'Increase Tempo';
 	const positionX = direction === 'decrease' ? '-left-4' : '-right-4';
 
-	const stopRepeating = () => {
+	const stopRepeating = useCallback(() => {
 		if (intervalRef.current) {
 			clearInterval(intervalRef.current);
 			intervalRef.current = null;
@@ -27,39 +30,46 @@ function ModifyTempoButton({ direction }: ModifyTempoButtonProps) {
 			clearTimeout(timeoutRef.current);
 			timeoutRef.current = null;
 		}
-	};
+	}, []);
 
-	const startRepeating = () => {
-		handleClick();
+	const startRepeating = useCallback(() => {
+		stopRepeating();
 
-		// Start after a delay
+		// Execute on press
+		handlerRef.current();
+
+		// Start repeating after a delay
 		timeoutRef.current = setTimeout(() => {
-			// Keep repeating
+			// Keep repeating at regular intervals
 			intervalRef.current = setInterval(() => {
-				handleClick();
+				handlerRef.current();
 			}, 200);
 		}, 500);
-	};
+	}, [stopRepeating]);
 
-	const handleMouseDown = () => {
+	const handleMouseDown = useCallback(() => {
 		startRepeating();
-	};
+	}, [startRepeating]);
 
-	const handleMouseUp = () => {
+	const handleMouseUp = useCallback(() => {
 		stopRepeating();
-	};
+	}, [stopRepeating]);
 
-	const handleMouseLeave = () => {
+	const handleMouseLeave = useCallback(() => {
 		stopRepeating();
-	};
+	}, [stopRepeating]);
 
-	const handleTouchStart = () => {
+	const handleTouchStart = useCallback(() => {
 		startRepeating();
-	};
+	}, [startRepeating]);
 
-	const handleTouchEnd = () => {
+	const handleTouchEnd = useCallback(() => {
 		stopRepeating();
-	};
+	}, [stopRepeating]);
+
+	const handleTouchCancel = useCallback(() => {
+		stopRepeating();
+	}, [stopRepeating]);
 
 	useEffect(() => {
 		return () => {
@@ -81,6 +91,7 @@ function ModifyTempoButton({ direction }: ModifyTempoButtonProps) {
 			onMouseLeave={handleMouseLeave}
 			onTouchStart={handleTouchStart}
 			onTouchEnd={handleTouchEnd}
+			onTouchCancel={handleTouchCancel}
 		>
 			<Icon icon={icon} filetype='svg' size='sm' />
 		</button>
