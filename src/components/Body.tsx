@@ -1,5 +1,5 @@
+import { ButtonValuesProvider } from '@/context/buttonValues';
 import { DrumsProvider } from '@/context/Drums';
-import { EditingProvider } from '@/context/Editing';
 import { IsPlayingProvider } from '@/context/IsPlaying';
 import { SoundsProvider } from '@/context/SoundsProvider';
 import VisualDisplay from './displays/VisualDisplay';
@@ -11,16 +11,16 @@ function Body() {
 	return (
 		<DrumsProvider>
 			<IsPlayingProvider>
-				<EditingProvider>
+				<ButtonValuesProvider>
 					<SoundsProvider>
-						<main className='Body flex flex-col justify-between gap-4 w-full max-w-screen-xl p-4 mx-auto'>
+						<main className='Body flex flex-col justify-between gap-4 w-full max-w-screen-xl px-8 py-4 mx-auto'>
 							<VisualDisplay />
 							<Metronome />
 							<BeatSelector />
 							<IO />
 						</main>
 					</SoundsProvider>
-				</EditingProvider>
+				</ButtonValuesProvider>
 			</IsPlayingProvider>
 		</DrumsProvider>
 	);

@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { SoundsContext } from './Sounds';
-import type { SoundsContextType } from './Sounds';
+import { SoundsContext } from '../context/Sounds';
+import type { SoundsContextType } from '../context/Sounds';
 
 export const useSounds = (): SoundsContextType => {
 	const context = useContext(SoundsContext);

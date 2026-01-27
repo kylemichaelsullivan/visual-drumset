@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { IsPlayingContext } from './IsPlaying';
-import type { IsPlayingContextType } from './IsPlaying';
+import { IsPlayingContext } from '../context/IsPlaying';
+import type { IsPlayingContextType } from '../context/IsPlaying';
 
 export const useIsPlaying = (): IsPlayingContextType => {
 	const context = useContext(IsPlayingContext);
