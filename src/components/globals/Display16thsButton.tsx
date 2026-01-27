@@ -1,5 +1,5 @@
-import Button from '@/components/displays/Button';
 import { useButtonValues } from '@/hooks/useButtonValues';
+import Button from './Button';
 
 function Display16thsButton() {
 	const { isDisplaying16ths, setIsDisplaying16ths } = useButtonValues();

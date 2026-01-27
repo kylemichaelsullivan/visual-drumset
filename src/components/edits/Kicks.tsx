@@ -1,9 +1,12 @@
+import clsx from 'clsx';
+import { useButtonValues } from '@/hooks/useButtonValues';
 import { useDrums } from '@/hooks/useDrums';
 import { getSubdivision } from '@/scripts';
 import type { counts } from '@/types/counts';
 
 function Kicks() {
 	const { kicks, setKicks } = useDrums();
+	const { isDisplaying16ths } = useButtonValues();
 
 	function changeKicks(id: string) {
 		const indices = id.split('-').slice(1).map(Number);
@@ -14,7 +17,12 @@ function Kicks() {
 	}
 
 	return (
-		<div className='Kicks grid grid-cols-8 py-4 sm:grid-cols-16'>
+		<div
+			className={clsx(
+				'Kicks grid py-4',
+				isDisplaying16ths ? 'grid-cols-8 sm:grid-cols-16' : 'grid-cols-8'
+			)}
+		>
 			{kicks.map((count, i) =>
 				count.map((division, j) => (
 					<input

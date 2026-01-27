@@ -1,7 +1,7 @@
 import EditBeat from '@/components/edits/EditBeat';
 import { useButtonValues } from '@/hooks/useButtonValues';
+import ShowBeat from '../displays/ShowBeat';
 import Counts from './Counts';
-import ShowBeat from './ShowBeat';
 
 function BeatDisplay() {
 	const { isEditing } = useButtonValues();

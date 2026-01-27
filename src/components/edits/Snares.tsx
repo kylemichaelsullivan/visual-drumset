@@ -1,9 +1,12 @@
+import clsx from 'clsx';
+import { useButtonValues } from '@/hooks/useButtonValues';
 import { useDrums } from '@/hooks/useDrums';
 import { getSubdivision } from '@/scripts';
 import type { counts } from '@/types/counts';
 
 function Snares() {
 	const { snares, setSnares } = useDrums();
+	const { isDisplaying16ths } = useButtonValues();
 
 	function changeSnares(id: string) {
 		const indices = id.split('-').slice(1).map(Number);
@@ -14,7 +17,12 @@ function Snares() {
 	}
 
 	return (
-		<div className='Snares grid grid-cols-8 py-4 sm:grid-cols-16'>
+		<div
+			className={clsx(
+				'Snares grid py-4',
+				isDisplaying16ths ? 'grid-cols-8 sm:grid-cols-16' : 'grid-cols-8'
+			)}
+		>
 			{snares.map((count, i) =>
 				count.map((division, j) => (
 					<input

@@ -1,9 +1,12 @@
+import clsx from 'clsx';
+import { useButtonValues } from '@/hooks/useButtonValues';
 import { useDrums } from '@/hooks/useDrums';
 import { getSubdivision } from '@/scripts';
 import type { counts } from '@/types/counts';
 
 function Cymbals() {
 	const { cymbals, setCymbals } = useDrums();
+	const { isDisplaying16ths } = useButtonValues();
 
 	function changeCymbals(id: string) {
 		const indices = id.split('-').slice(1).map(Number);
@@ -14,7 +17,12 @@ function Cymbals() {
 	}
 
 	return (
-		<div className='Cymbals grid grid-cols-8 py-4 sm:grid-cols-16'>
+		<div
+			className={clsx(
+				'Cymbals grid py-4',
+				isDisplaying16ths ? 'grid-cols-8 sm:grid-cols-16' : 'grid-cols-8'
+			)}
+		>
 			{cymbals.map((count, i) =>
 				count.map((division, j) => (
 					<input

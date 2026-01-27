@@ -1,5 +1,5 @@
-import Button from '@/components/displays/Button';
 import { useSounds } from '@/hooks/useSounds';
+import Button from './Button';
 
 function MuteButton() {
 	const { isMuted, setIsMuted } = useSounds();

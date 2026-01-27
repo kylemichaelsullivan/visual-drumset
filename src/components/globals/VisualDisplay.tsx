@@ -1,9 +1,9 @@
 import clsx from 'clsx';
-import Buttons from '@/components/displays/Buttons';
 import { useButtonValues } from '@/hooks/useButtonValues';
 import { useIsPlaying } from '@/hooks/useIsPlaying';
 import SkipLink from '../SkipLink';
 import BeatDisplay from './BeatDisplay';
+import Buttons from './Buttons';
 
 function VisualDisplay() {
 	const { isDisplaying16ths } = useButtonValues();

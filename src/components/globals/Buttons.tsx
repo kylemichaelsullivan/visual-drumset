@@ -1,6 +1,6 @@
-import Display16thsButton from '@/components/displays/Display16thsButton';
-import EditButton from '@/components/displays/EditButton';
-import MuteButton from '@/components/displays/MuteButton';
+import Display16thsButton from './Display16thsButton';
+import EditButton from './EditButton';
+import MuteButton from './MuteButton';
 
 function Buttons() {
 	return (
