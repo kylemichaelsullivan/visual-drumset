@@ -16,6 +16,7 @@ export type IconType =
 	| 'pen'
 	| 'play'
 	| 'save'
+	| 'screenshot'
 	| 'skip-back'
 	| 'skip-forward'
 	| 'upload'

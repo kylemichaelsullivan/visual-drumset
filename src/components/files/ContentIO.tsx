@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import Export from './Export';
 import Import from './Import';
+import SaveScreenshot from './SaveScreenshot';
 
 type ContentIOProps = {
 	isOpen: boolean;
@@ -16,6 +17,7 @@ function ContentIO({ isOpen }: ContentIOProps) {
 		>
 			<Import />
 			<Export />
+			<SaveScreenshot />
 		</div>
 	);
 }

@@ -50,7 +50,7 @@ function Import() {
 		<div className='Import flex flex-col gap-2 items-end sm:flex-row sm:justify-end sm:items-center'>
 			<input
 				type='file'
-				className={clsx('cursor-pointer', getButtonClass(true))}
+				className={clsx('cursor-pointer max-w-full', getButtonClass(true))}
 				accept='.json'
 				onChange={handleImport}
 				id='file-upload'

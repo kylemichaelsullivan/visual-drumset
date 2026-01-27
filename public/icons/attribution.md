@@ -13,6 +13,7 @@
 - pen.svg (pen-1726754/)
 - play.svg (play-1130050/)
 - save.svg (save-7518262/)
+- screenshot.svg (screenshot-7336235/)
 - skip-back.svg (skip-back-1130056/)
 - skip-forward (skip-forward-1130055/)
 - upload.svg (upload-1157132/)
