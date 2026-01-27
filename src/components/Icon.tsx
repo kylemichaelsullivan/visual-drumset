@@ -23,7 +23,7 @@ function Icon({ icon, filetype, size = 'sm', className }: IconProps) {
 	return (
 		<img
 			src={path}
-			className={clsx('Icon', sizeClasses[size], className)}
+			className={clsx('Icon block mx-auto', sizeClasses[size], className)}
 			alt={icon}
 		/>
 	);

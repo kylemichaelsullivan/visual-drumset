@@ -31,7 +31,7 @@ function IconButton({
 		<button
 			type='button'
 			className={clsx(
-				'IconButton flex justify-center items-center',
+				'IconButton flex justify-center items-center bg-transparent border-0 p-0',
 				sizeClasses[size],
 				className
 			)}
