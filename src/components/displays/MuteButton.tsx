@@ -1,14 +1,13 @@
-import IconButton from '@/components/IconButton';
-import { useSounds } from '@/context/useSounds';
+import Button from '@/components/displays/Button';
+import { useSounds } from '@/hooks/useSounds';
 
 function MuteButton() {
 	const { isMuted, setIsMuted } = useSounds();
 
 	return (
-		<IconButton
+		<Button
 			icon={isMuted ? 'mute' : 'volume'}
-			filetype='svg'
-			className='MuteButton absolute top-0 left-0 hover:ring-1'
+			componentName='MuteButton'
 			size='md'
 			title={isMuted ? 'Mute?' : 'Unmute?'}
 			onMouseDown={() => setIsMuted(() => !isMuted)}

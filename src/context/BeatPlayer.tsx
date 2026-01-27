@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { useDrums } from './useDrums';
-import { useEditing } from './useEditing';
-import { useIsPlaying } from './useIsPlaying';
+import { useButtonValues } from '../hooks/useButtonValues';
+import { useDrums } from '../hooks/useDrums';
+import { useIsPlaying } from '../hooks/useIsPlaying';
 import type { drums } from '@/types/drums';
 
 type BeatPlayerProps = {
@@ -11,7 +11,7 @@ type BeatPlayerProps = {
 export function BeatPlayer({ playSound }: BeatPlayerProps) {
 	const { cymbals, snares, kicks } = useDrums();
 	const { isRunning, currentBeat, currentSubdivision } = useIsPlaying();
-	const { isEditing } = useEditing();
+	const { isEditing } = useButtonValues();
 	const prevPositionRef = useRef<{ beat: number; subdivision: number } | null>(
 		null
 	);

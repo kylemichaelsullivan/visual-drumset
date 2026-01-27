@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+import { getButtonClass } from '@/scripts';
 import IconButton from '../IconButton';
 
 type ToggleIOProps = {
@@ -10,7 +12,7 @@ function ToggleIO({ isOpen, handleToggle }: ToggleIOProps) {
 		<IconButton
 			icon={isOpen ? 'close' : 'save'}
 			filetype='svg'
-			className='ToggleIO border border-transparent rounded-sm hover:border-black'
+			className={clsx('ToggleIO', getButtonClass(true))}
 			size='lg'
 			title={isOpen ? 'Close File Operations' : 'Open File Operations'}
 			onClick={handleToggle}

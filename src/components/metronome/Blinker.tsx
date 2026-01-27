@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { useSounds } from '@/context/useSounds';
-import type { Dispatch, SetStateAction } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Icon from '@/components/Icon';
+import { useSounds } from '@/hooks/useSounds';
+import type { Dispatch, SetStateAction } from 'react';
 
 type BlinkerProps = {
 	bpm: number;

@@ -1,12 +1,19 @@
-import { Fragment } from 'react';
 import clsx from 'clsx';
-import { useIsPlaying } from '@/context/useIsPlaying';
+import { Fragment } from 'react';
+import { useButtonValues } from '@/hooks/useButtonValues';
+import { useIsPlaying } from '@/hooks/useIsPlaying';
 
 function Counts() {
 	const { currentBeat, currentSubdivision } = useIsPlaying();
+	const { isDisplaying16ths } = useButtonValues();
 
 	return (
-		<div className='Counts grid grid-cols-8 border-b sm:grid-cols-16'>
+		<div
+			className={clsx(
+				'Counts grid border-b',
+				isDisplaying16ths ? 'grid-cols-8 sm:grid-cols-16' : 'grid-cols-8'
+			)}
+		>
 			{Array.from({ length: 4 }, (_, beatIndex) => (
 				<Fragment key={`beat-${beatIndex + 1}`}>
 					<div

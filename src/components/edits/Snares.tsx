@@ -1,4 +1,4 @@
-import { useDrums } from '@/context/useDrums';
+import { useDrums } from '@/hooks/useDrums';
 import { getSubdivision } from '@/scripts';
 import type { counts } from '@/types/counts';
 

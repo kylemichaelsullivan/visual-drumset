@@ -1,22 +1,29 @@
 import clsx from 'clsx';
-import { useDrums } from '@/context/useDrums';
-import { useIsPlaying } from '@/context/useIsPlaying';
+import { useButtonValues } from '@/hooks/useButtonValues';
+import { useDrums } from '@/hooks/useDrums';
+import { useIsPlaying } from '@/hooks/useIsPlaying';
 import { getBackgroundClass, getSubdivision } from '@/scripts';
 import DrumIcon from './DrumIcon';
 
 function Cymbals() {
 	const { cymbals } = useDrums();
 	const { currentBeat, currentSubdivision } = useIsPlaying();
+	const { isDisplaying16ths } = useButtonValues();
 
 	return (
-		<div className='Cymbals grid grid-cols-8 sm:grid-cols-16'>
+		<div
+			className={clsx(
+				'Cymbals grid',
+				isDisplaying16ths ? 'grid-cols-8 sm:grid-cols-16' : 'grid-cols-8'
+			)}
+		>
 			{cymbals.map((count, i) =>
 				count.map((division, j) => (
 					<div
 						className={clsx(
 							'Cymbal',
 							getBackgroundClass(j),
-							'text-center p-2',
+							'text-center py-2',
 							i === currentBeat && j === currentSubdivision && 'active'
 						)}
 						key={`${i}-${getSubdivision(j)}`}

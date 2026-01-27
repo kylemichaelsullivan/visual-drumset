@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import IconButton from '@/components/IconButton';
-import { useSounds } from '@/context/useSounds';
+import { useSounds } from '@/hooks/useSounds';
 import type { drums } from '@/types/drums';
 import type { IconSize } from '@/types/icon';
 

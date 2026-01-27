@@ -1,14 +1,13 @@
-import { useEditing } from '@/context/useEditing';
-import IconButton from '@/components/IconButton';
+import Button from '@/components/displays/Button';
+import { useButtonValues } from '@/hooks/useButtonValues';
 
 function EditButton() {
-	const { isEditing, setIsEditing } = useEditing();
+	const { isEditing, setIsEditing } = useButtonValues();
 
 	return (
-		<IconButton
+		<Button
 			icon={isEditing ? 'check' : 'pen'}
-			filetype='svg'
-			className='EditButton absolute top-0 right-0 hover:ring-1'
+			componentName='EditButton'
 			size='md'
 			title={isEditing ? 'See Beat' : 'Edit Beat'}
 			onMouseDown={() => setIsEditing(() => !isEditing)}

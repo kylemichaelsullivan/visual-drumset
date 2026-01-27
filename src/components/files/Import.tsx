@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import clsx from 'clsx';
-import { useDrums } from '@/context/useDrums';
+import { useState } from 'react';
+import { useDrums } from '@/hooks/useDrums';
 import { getButtonClass } from '@/scripts';
 import ButtonIO from './ButtonIO';
 import { isBeatValid } from './Zod';
