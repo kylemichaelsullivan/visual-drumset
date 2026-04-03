@@ -217,7 +217,7 @@ This creates a simple backbeat pattern:
 ### In Components
 
 ```typescript
-import { useDrums } from '@/context/useDrums';
+import { useDrums } from '@/hooks/useDrums';
 
 function MyComponent() {
   const { cymbals, snares, kicks } = useDrums();
@@ -245,7 +245,7 @@ if (isBeatValid(cymbals, snares, kicks)) {
 ### Setting New Beats
 
 ```typescript
-import { useDrums } from '@/context/useDrums';
+import { useDrums } from '@/hooks/useDrums';
 
 function MyComponent() {
   const { setCymbals, setSnares, setKicks } = useDrums();

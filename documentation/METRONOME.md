@@ -8,27 +8,25 @@ The metronome provides visual and audio feedback to help users keep time while p
 
 ## Components
 
-### Metronome Container
+### Metronome container
 
-The `Metronome` component (`/src/components/metronome/Metronome.tsx`) serves as the container that combines:
-- `Blinker` - Visual and audio indicator
-- `Tempo` - BPM control input
+**`Metronome`** (`src/components/metronome/Metronome.tsx`) — skip link plus **`MetronomeContent`**.
 
-### Blinker Component
+### MetronomeContent
 
-The `Blinker` component (`/src/components/metronome/Blinker.tsx`) is the core metronome engine that:
-- Manages timing intervals
-- Updates playback position
-- Provides visual feedback (flashing circle)
-- Generates audio beeps
-- Controls start/stop state
+**`MetronomeContent`** (`src/components/metronome/MetronomeContent.tsx`) — bordered control strip: **ModifyTempoButton** (−), **Blinker**, **Tempo**, **ModifyTempoButton** (+). Reads BPM and **`setPosition`** from **`useIsPlaying`**.
 
-### Tempo Component
+### Blinker
 
-The `Tempo` component (`/src/components/metronome/Tempo.tsx`) provides:
-- BPM input field (number input)
-- BPM slider control
-- Visual feedback of current tempo
+**`Blinker`** (`src/components/metronome/Blinker.tsx`) — interval-driven playback cursor, flash UI, start/stop, and metronome beep. The beep respects **`isMetronomeMuted`** and **`isAllMuted`** from **`useSounds()`** (see [AUDIO_SYSTEM.md](./AUDIO_SYSTEM.md)).
+
+### Tempo
+
+**`Tempo`** — BPM slider and number input (shared state from **`IsPlayingProvider`**).
+
+### ModifyTempoButton
+
+Step BPM up or down (see `ModifyTempoButton.tsx`).
 
 ## Timing System
 
@@ -77,11 +75,11 @@ The blinker shows two states:
 1. **Stopped**: Shows a play icon (▶)
 2. **Running**: Shows a circle that flashes green on each beat
 
-```typescript
+```tsx
 {isRunning ? (
-  <div className={`${isLit ? 'bg-green-400' : 'bg-gray-200'} rounded-full w-full h-full`} />
+  <div className={clsx(isLit ? 'bg-green-400' : 'bg-gray-200', 'rounded-full w-full h-full')} />
 ) : (
-  <FontAwesomeIcon icon={faPlay} />
+  <Icon icon='play' filetype='svg' size='sm' />
 )}
 ```
 
@@ -108,21 +106,14 @@ The metronome generates an 800 Hz sine wave beep on each beat:
 
 ```typescript
 const beep = useCallback(() => {
-  if (isMuted) return;
-  
+  if (isAllMuted || isMetronomeMuted) return;
+
   const context = getAudioContext();
-  if (context.state === 'suspended') {
-    context.resume().catch(() => {});
-  }
-  
-  const o = context.createOscillator();
-  o.type = 'sine';
-  o.frequency.value = 800;  // 800 Hz
-  o.connect(context.destination);
-  o.start();
-  o.stop(context.currentTime + 0.1);  // 100ms duration
-}, [getAudioContext, isMuted]);
+  // ... resume if needed, then oscillator beep
+}, [getAudioContext, isAllMuted, isMetronomeMuted]);
 ```
+
+(`useSounds()` supplies the mute flags in `Blinker.tsx`.)
 
 ### Beep Timing
 

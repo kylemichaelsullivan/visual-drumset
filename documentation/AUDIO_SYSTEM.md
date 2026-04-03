@@ -15,8 +15,8 @@ The audio system is managed by the `SoundsProvider` component (`src/context/Soun
 1. Creates and manages the AudioContext
 2. Generates audio buffers for drum sounds
 3. Provides the `playSound` function to components
-4. Manages mute state
-5. Contains the `BeatPlayer` component for automatic playback
+4. Exposes **`isMetronomeMuted`** and **`isAllMuted`** (see **`MuteButton`**)
+5. Renders **`BeatPlayer`** for automatic hit playback during the metronome
 
 ### AudioContext Management
 
@@ -68,21 +68,13 @@ const buffer = createNoiseBuffer(0.08, ctx);
 playNoise(buffer, 850, ctx); // Lower frequency filter
 ```
 
-#### Kick/Bass
+#### Kick / Bass
 
-- **Type**: Sine wave oscillator
-- **Frequency**: 110 Hz (A2)
-- **Envelope**: Exponential decay over 0.2 seconds
-- **Characteristic**: Deep, punchy low-end
+- **Type**: Short stack of sine partials (fundamental ~110 Hz with quiet perfect-fifth and octave harmonics)
+- **Envelope**: Shared master gain with exponential decay (~0.2 s)
+- **Characteristic**: Fuller low-end than a single sine
 
-```typescript
-const o = ctx.createOscillator();
-o.type = 'sine';
-o.frequency.value = 110;
-// Gain envelope for decay
-g.gain.setValueAtTime(1, ctx.currentTime);
-g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-```
+The implementation lives in **`playSoundInternal`** in `SoundsProvider.tsx` (three detuned sine voices into one gain envelope).
 
 ### Noise Buffer Creation
 
@@ -122,7 +114,13 @@ function playNoise(
 
 ## Metronome Sound
 
-The metronome uses a simple sine wave oscillator (`src/components/metronome/Blinker.tsx`):
+The metronome uses its **own** `AudioContext` in **`Blinker`**. The beep is skipped when **`isAllMuted`** or **`isMetronomeMuted`** from **`useSounds()`**:
+
+```typescript
+if (isAllMuted || isMetronomeMuted) return;
+```
+
+Otherwise it plays a simple sine (`src/components/metronome/Blinker.tsx`):
 
 ```typescript
 const o = context.createOscillator();
@@ -227,26 +225,16 @@ if (
 }
 ```
 
-## Mute Functionality
+## Mute functionality
 
-Audio can be muted via the `MuteButton` component:
+**`SoundsProvider`** holds two flags:
 
-```typescript
-const [isMuted, setIsMuted] = useState<boolean>(false);
+- **`isAllMuted`** — `playSound` returns immediately; **`Blinker`** does not beep
+- **`isMetronomeMuted`** — only the metronome beep is silenced; drum hits still fire unless **`isAllMuted`**
 
-const playSound = useCallback((drum: drums) => {
-  if (isMuted) return; // Early return if muted
-  // ... play sound
-}, [isMuted, ...]);
-```
+**`MuteButton`** uses timed pointer taps to toggle those modes (single tap vs double tap—see component source).
 
-**Behavior**:
-- Mute state is stored in `SoundsProvider`
-- `playSound` checks mute state before playing
-- Applies to both drum sounds and metronome beep
-- Visual indicator shows mute state
-
-## Simultaneous Playback
+## Simultaneous playback
 
 The system supports simultaneous playback of multiple sounds:
 

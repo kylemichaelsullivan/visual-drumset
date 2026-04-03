@@ -88,12 +88,13 @@ Consistent link styling with hover and focus states.
 
 ```css
 button,
-input[type='checkbox'] {
+input[type='checkbox'],
+select {
   cursor: pointer;
 }
 ```
 
-Pointer cursor for all interactive elements.
+Pointer cursor for interactive controls.
 
 #### Custom Grid
 
@@ -115,33 +116,36 @@ Custom grid utility for 16-column layout (used for beat display).
 
 Minimum height for the main display area.
 
-#### Responsive Beat Display
+#### Responsive beat display and optional `hide-16ths`
+
+By default, **even-indexed** count and hit cells (the **e** and **a** columns) are **hidden** until the viewport reaches the `sm` breakpoint. From `sm` upward, those columns are shown **unless** **`VisualDisplay`** has the **`hide-16ths`** class when **`isDisplaying16ths`** is false (user toggle).
 
 ```css
-/* Mobile: Hide even beats */
+/* Default: hide e/a columns (same selectors for Counts, Cymbals, Snares, Kicks) */
 .VisualDisplay .Counts .Count:nth-of-type(even),
-.VisualDisplay .Cymbals .Cymbal:nth-of-type(even),
-.VisualDisplay .Snares .Snare:nth-of-type(even),
-.VisualDisplay .Kicks .Kick:nth-of-type(even) {
+.VisualDisplay .Cymbals .Cymbal:nth-of-type(even) {
   display: none;
 }
 
-/* Desktop: Show all beats */
 @media (min-width: 640px) {
-  .sm\:grid-cols-16 {
-    grid-template-columns: repeat(16, minmax(0, 1fr));
-  }
-
-  .VisualDisplay .Counts .Count:nth-of-type(even),
-  .VisualDisplay .Cymbals .Cymbal:nth-of-type(even),
-  .VisualDisplay .Snares .Snare:nth-of-type(even),
-  .VisualDisplay .Kicks .Kick:nth-of-type(even) {
+  .VisualDisplay:not(.hide-16ths) .Counts .Count:nth-of-type(even),
+  .VisualDisplay:not(.hide-16ths) .Cymbals .Cymbal:nth-of-type(even) {
     display: block;
   }
 }
+
+/* User chose compressed view on wide screens */
+.VisualDisplay.hide-16ths .Counts .Count:nth-of-type(even),
+.VisualDisplay.hide-16ths .Cymbals .Cymbal:nth-of-type(even) {
+  display: none;
+}
 ```
 
-Responsive behavior: hides even beats on mobile, shows all on desktop.
+See **`src/index.css`** for the full selectors.
+
+#### Icon buttons inside VisualDisplay
+
+Drum **`IconButton`** elements get max dimensions in vw units on the live page; **`SaveScreenshot`** normalizes sizes when exporting.
 
 #### Playback States
 

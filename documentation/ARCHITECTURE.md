@@ -12,29 +12,37 @@ Visual Drumset is a React + TypeScript application built with Vite. It provides 
 App
 └── Body
     ├── VisualDisplay
-    │   ├── MuteButton
-    │   ├── EditButton
-    │   ├── Counts
-    │   ├── ShowBeat (display mode)
-    │   │   ├── Cymbals
-    │   │   ├── Snares
-    │   │   └── Kicks
-    │   └── EditBeat (edit mode)
-    │       ├── Cymbals (edit)
-    │       ├── Snares (edit)
-    │       └── Kicks (edit)
+    │   ├── Buttons (MuteButton, Display16thsButton, EditButton)
+    │   ├── SkipLink
+    │   └── BeatDisplay
+    │       ├── Counts
+    │       ├── ShowBeat (display mode)
+    │       │   ├── Cymbals → DrumIcon
+    │       │   ├── Snares → DrumIcon
+    │       │   └── Kicks → DrumIcon
+    │       └── EditBeat (edit mode)
+    │           ├── Cymbals (edit)
+    │           ├── Snares (edit)
+    │           └── Kicks (edit)
     ├── Metronome
-    │   ├── Blinker
-    │   └── Tempo
+    │   ├── SkipLink
+    │   └── MetronomeContent
+    │       ├── ModifyTempoButton (decrease)
+    │       ├── Blinker
+    │       ├── Tempo
+    │       └── ModifyTempoButton (increase)
     ├── BeatSelector
+    │   ├── SkipLink
     │   ├── BeatSelectorSelect
-    │   ├── BeatSelectorArrows
-    │   └── BeatSelectorApply
+    │   └── BeatSelectorActions
+    │       ├── BeatSelectorArrows
+    │       └── BeatSelectorApply
     └── IO
         ├── ToggleIO
         └── ContentIO
             ├── Import
-            └── Export
+            ├── Export
+            └── SaveScreenshot
 ```
 
 ## State Management
@@ -46,10 +54,12 @@ The application uses React Context API for state management, organized into four
 ```
 DrumsProvider
 └── IsPlayingProvider
-    └── EditingProvider
+    └── ButtonValuesProvider
         └── SoundsProvider
             └── [Application Components]
 ```
+
+`BeatPlayer` (`src/context/BeatPlayer.tsx`) is rendered inside `SoundsProvider` and receives `playSound` as a prop.
 
 ### Context Providers
 
@@ -63,17 +73,16 @@ DrumsProvider
    - Tracks current position (currentBeat, currentSubdivision)
    - Provides position update function
 
-3. **EditingProvider** (`src/context/Editing.tsx`)
-   - Manages edit mode state
-   - Handles Escape key to exit edit mode
-   - Prevents playback while editing
+3. **ButtonValuesProvider** (`src/context/buttonValues.tsx`)
+   - **`isEditing`**: edit vs view mode; **Escape** clears edit mode
+   - **`isDisplaying16ths`**: when false, the UI uses an 8-slot view (eighth-note columns); desktop can toggle full 16ths via `Display16thsButton`
+   - Exposed to components through **`useButtonValues()`** (`src/hooks/useButtonValues.ts`)
 
 4. **SoundsProvider** (`src/context/SoundsProvider.tsx`)
-   - Manages Web Audio API context
-   - Handles audio initialization and warm-up
-   - Provides sound playback function
-   - Manages mute state
-   - Contains BeatPlayer component for automatic playback
+   - Manages Web Audio API context for drum voices
+   - Handles initialization, buffer reuse, and warm-up
+   - Exposes **`playSound`**, **`isMetronomeMuted`**, **`isAllMuted`**, and setters for those flags
+   - Renders **BeatPlayer** so pattern hits fire in sync with `IsPlayingProvider`
 
 ## Data Flow
 
@@ -89,22 +98,25 @@ See [BEAT_FORMAT.md](./BEAT_FORMAT.md) for detailed structure.
 ### State Updates
 
 1. **Beat Selection**: User selects beat → `BeatSelector` fetches JSON → Updates `DrumsProvider` state
-2. **Beat Editing**: User toggles edit mode → `EditingProvider` sets `isEditing` → Components switch to edit mode
+2. **Beat Editing**: User toggles edit mode → `ButtonValuesProvider` sets `isEditing` → Components switch to edit mode
 3. **Playback**: Metronome starts → `IsPlayingProvider` tracks position → `BeatPlayer` checks drum state → `SoundsProvider` plays sounds
 4. **Import/Export**: User imports/exports JSON → Validates with Zod → Updates `DrumsProvider` state
 
 ## Component Organization
 
-### Display Components (`src/components/displays/`)
+### Display components (`src/components/displays/`)
 
-Components that render the current beat pattern:
-- **VisualDisplay**: Main container, switches between display/edit modes
-- **ShowBeat**: Displays current beat pattern (read-only)
-- **Counts**: Shows beat numbers (1, 2, 3, 4)
-- **Cymbals, Snares, Kicks**: Display drum patterns with icons
-- **EditButton**: Toggles edit mode
-- **MuteButton**: Toggles audio mute state
-- **Icon**: Reusable icon component
+- **ShowBeat**: Read-only rows for cymbals, snares, kicks
+- **Cymbals, Snares, Kicks**: Grids of **`DrumIcon`** cells (click a hit to preview that voice via `playSound`)
+- **DrumIcon**: PNG hit control wired to **`useSounds()`**
+
+### Global beat UI (`src/components/globals/`)
+
+- **VisualDisplay**: Layout, skip link, playback styling class, `hide-16ths` class from **`isDisplaying16ths`**
+- **BeatDisplay**: Chooses **ShowBeat** vs **EditBeat** from **`useButtonValues().isEditing`**
+- **Buttons**: **MuteButton**, **Display16thsButton** (lg screens only), **EditButton**
+- **Counts**: Subdivision labels and highlighting (uses **`isDisplaying16ths`** for column layout)
+- **Button**: Shared control styling for globals
 
 ### Edit Components (`src/components/edits/`)
 
@@ -112,24 +124,24 @@ Components for editing beat patterns:
 - **EditBeat**: Container for edit components
 - **Cymbals, Snares, Kicks**: Interactive checkboxes for editing patterns
 
-### Metronome Components (`src/components/metronome/`)
+### Metronome components (`src/components/metronome/`)
 
-Metronome functionality:
-- **Metronome**: Container component
-- **Blinker**: Visual indicator and timing logic
-- **Tempo**: BPM control slider
+- **Metronome**: Region wrapper and skip link
+- **MetronomeContent**: Border, flex layout, tempo controls
+- **Blinker**: Timing, position updates, click sound (respects **`isMetronomeMuted`** / **`isAllMuted`**)
+- **Tempo**: BPM slider and field
+- **ModifyTempoButton**: Nudge BPM up or down
 
-### File Components (`src/components/files/`)
+### File components (`src/components/files/`)
 
-Beat file management:
-- **BeatSelector**: Main beat selection interface
-- **BeatSelectorSelect**: Dropdown for beat selection
-- **BeatSelectorArrows**: Navigation arrows
-- **BeatSelectorApply**: Apply button
-- **IO**: Import/Export container
-- **Import**: File upload component
-- **Export**: JSON download component
-- **Zod**: Beat validation schema
+- **BeatSelector**, **BeatSelectorSelect**, **BeatSelectorActions**, **BeatSelectorArrows**, **BeatSelectorApply**
+- **IO**, **ToggleIO**, **ContentIO**, **Import**, **Export**, **SaveScreenshot**, **ButtonIO**
+- **Zod.tsx**: **`isBeatValid`** helper (Zod-backed)
+
+### Shared UI
+
+- **Icon**, **IconButton**: SVG assets under `public/icons/`; drum PNGs under **`public/icons/drumset/`**
+- **SkipLink**: Keyboard-accessible skip navigation
 
 ### Layout Components
 
@@ -161,7 +173,7 @@ Beat file management:
 
 ### 3. Custom Hooks for Context Access
 
-**Decision**: Create custom hooks (`useDrums`, `useEditing`, `useIsPlaying`, `useSounds`) instead of using `useContext` directly.
+**Decision**: Create custom hooks (`useDrums`, `useButtonValues`, `useIsPlaying`, `useSounds`) in **`src/hooks/`** instead of using `useContext` directly.
 
 **Rationale**:
 - Provides type safety
@@ -169,14 +181,13 @@ Beat file management:
 - Makes context usage more consistent
 - Easier to refactor if context structure changes
 
-### 4. BeatPlayer as Part of SoundsProvider
+### 4. BeatPlayer Beside SoundsProvider Children
 
-**Decision**: Include `BeatPlayer` component inside `SoundsProvider` rather than as a separate component.
+**Decision**: Render **`BeatPlayer`** inside **`SoundsProvider`** (same module tree) and pass **`playSound`** in as a prop.
 
 **Rationale**:
-- `BeatPlayer` needs access to `playSound` function
-- Keeps audio-related logic together
-- Ensures `BeatPlayer` only renders when audio is available
+- Keeps playback scheduling next to the audio implementation
+- Avoids circular imports while still using a small, testable **`BeatPlayer`** module
 
 ### 5. Zod Validation
 
@@ -203,11 +214,13 @@ Beat file management:
 ```
 src/
 ├── components/          # React components
-│   ├── displays/       # Display components
-│   ├── edits/          # Edit components
-│   ├── files/          # File I/O components
-│   └── metronome/      # Metronome components
-├── context/            # Context providers and hooks
+│   ├── displays/       # Beat rows (read-only)
+│   ├── edits/          # Edit mode rows
+│   ├── files/          # Beats, IO, screenshot
+│   ├── globals/        # VisualDisplay, buttons, Counts, BeatDisplay
+│   └── metronome/      # Metronome UI
+├── context/            # Context providers + BeatPlayer
+├── hooks/              # useDrums, useIsPlaying, useSounds, useButtonValues
 ├── types/              # TypeScript type definitions
 ├── index.css           # Global styles
 ├── main.tsx            # Application entry point
@@ -240,10 +253,10 @@ See [STYLING_GUIDE.md](./STYLING_GUIDE.md) for detailed styling information.
 
 ## Performance Considerations
 
-1. **Memoization**: Context values are memoized to prevent unnecessary re-renders
-2. **Refs for Audio**: AudioContext stored in refs to avoid re-creation
-3. **Conditional Rendering**: Edit components only render when in edit mode
-4. **Lazy Initialization**: Audio buffers initialized on first use
+1. **Memoization**: Context values are memoized to reduce unnecessary re-renders
+2. **Refs for Audio**: AudioContext and noise buffers live in refs
+3. **Conditional Rendering**: Edit rows replace display rows only in edit mode
+4. **Lazy Initialization**: Buffers are created during warm-up / first playback
 
 ## Future Architecture Considerations
 

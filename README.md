@@ -1,30 +1,68 @@
-# React + TypeScript + Vite
+# Visual Drumset
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Visual Drumset is a browser-based practice tool for **four-on-the-floor style drum patterns**. You can load and edit 16th-note grids for cymbals, snares, and kicks, run a metronome with visual highlighting, import and export beats as JSON, and save a screenshot of the beat display.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Visual grid** for one measure (4 beats × 4 sixteenth-note slots per drum voice)
+- **Metronome** with adjustable BPM, subdivision timing, and optional mute for the click only or for all audio
+- **42 built-in beats** in `public/beats/`, plus random selection
+- **Edit mode** with checkboxes; **Escape** exits edit mode
+- **Import / export** of beat JSON validated with [Zod](https://zod.dev/)
+- **Save screenshot** of the beat area (uses [html2canvas](https://html2canvas.hertzen.com/))
+- **Web Audio** synthesised drums (no sample files for kit voices)
 
-## Expanding the ESLint configuration
+## Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Vite 5](https://vitejs.dev/) with [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react)
+- [Tailwind CSS v4](https://tailwindcss.com/) via [@tailwindcss/vite](https://tailwindcss.com/docs/installation/using-vite)
+- [Biome](https://biomejs.dev/) for lint and format
+- State: React Context + hooks under `src/context/` and `src/hooks/`
 
-- Configure the top-level `parserOptions` property like this:
+## Quick start
 
-```js
-export default {
-	// other rules...
-	parserOptions: {
-		ecmaVersion: 'latest',
-		sourceType: 'module',
-		project: ['./tsconfig.json', './tsconfig.node.json'],
-		tsconfigRootDir: __dirname,
-	},
-};
+Prerequisites: [Node.js](https://nodejs.org/) 18+ (or [Bun](https://bun.sh/) if you use it locally).
+
+```bash
+git clone <repository-url>
+cd visual-drumset
+npm install   # or: bun install
+npm run dev   # or: bun dev
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+Then open the URL shown in the terminal (default [http://localhost:5173](http://localhost:5173)).
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Vite dev server with HMR |
+| `npm run build` | `tsc -b` then production build to `dist/` |
+| `npm run preview` | Serve the production build |
+| `npm run lint` | `biome check .` |
+| `npm run lint:fix` | Biome check with write |
+| `npm run format` | Biome format |
+| `npm run check` | Same as `lint` |
+| `npm run check:write` | Lint + format with fixes |
+
+## Documentation
+
+Project docs live in [`documentation/`](documentation/):
+
+| Doc | Purpose |
+|-----|---------|
+| [ARCHITECTURE.md](documentation/ARCHITECTURE.md) | App structure, providers, data flow |
+| [STATE_MANAGEMENT.md](documentation/STATE_MANAGEMENT.md) | Contexts and hooks |
+| [COMPONENT_GUIDE.md](documentation/COMPONENT_GUIDE.md) | Component inventory |
+| [USER_GUIDE.md](documentation/USER_GUIDE.md) | How to use the app |
+| [AUDIO_SYSTEM.md](documentation/AUDIO_SYSTEM.md) | Web Audio behaviour |
+| [METRONOME.md](documentation/METRONOME.md) | Timing and metronome UI |
+| [BEAT_FORMAT.md](documentation/BEAT_FORMAT.md) | JSON beat schema |
+| [STYLING_GUIDE.md](documentation/STYLING_GUIDE.md) | CSS and Tailwind patterns |
+| [DEVELOPMENT_SETUP.md](documentation/DEVELOPMENT_SETUP.md) | Tooling and workflow |
+| [GIT_COMMITS.md](documentation/GIT_COMMITS.md) | Commit message convention |
+
+## Licence / project
+
+Private package (`"private": true` in `package.json`). See repository settings for licence and contribution policy.

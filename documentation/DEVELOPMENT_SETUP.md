@@ -187,21 +187,22 @@ bun run preview
 
 ```
 visual-drumset/
-├── public/              # Static assets
-│   ├── beats/          # Predefined beat JSON files
-│   └── icons/          # Drum icon images
+├── public/
+│   ├── beats/           # beat-1.json … beat-42.json
+│   └── icons/           # UI SVGs plus drumset/*.png
 ├── src/
-│   ├── components/     # React components
-│   ├── context/        # Context providers and hooks
-│   ├── types/          # TypeScript type definitions
-│   ├── index.css       # Global styles
-│   └── main.tsx        # Application entry point
-├── documentation/      # Project documentation
-├── biome.json          # Biome configuration
-├── package.json        # Dependencies and scripts
-├── tsconfig.json       # TypeScript configuration
-├── vite.config.ts      # Vite configuration
-└── tailwind.config.js  # Tailwind CSS configuration
+│   ├── components/      # Feature folders (displays, edits, files, globals, metronome)
+│   ├── context/         # Providers + BeatPlayer
+│   ├── hooks/           # useDrums, useIsPlaying, useSounds, useButtonValues
+│   ├── types/
+│   ├── index.css
+│   └── main.tsx
+├── documentation/
+├── biome.json
+├── package.json
+├── tsconfig.json
+├── vite.config.ts       # React + @tailwindcss/vite + `@/` alias
+└── tailwind.config.js   # Present for tooling; primary Tailwind v4 setup is the Vite plugin
 ```
 
 ## Code Style Guidelines

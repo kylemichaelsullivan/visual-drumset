@@ -191,7 +191,7 @@ When committing changes related to components, be specific:
 - **Metronome Components**: Metronome, Tempo, Blinker
 - **File Components**: BeatSelector, BeatSelectorArrows, BeatSelectorSelect, BeatSelectorApply, Import, Export, IO, Zod
 - **Layout Components**: App, Body, Footer
-- **Context Providers**: DrumsProvider, EditingProvider
+- **Context Providers**: DrumsProvider, IsPlayingProvider, ButtonValuesProvider, SoundsProvider
 
 ### Beat System
 

@@ -31,18 +31,20 @@ The main display shows the current beat pattern:
 - **Snares**: Middle row with snare icons
 - **Kicks**: Bottom row with kick icons
 
-**During Playback**:
-- Active position is highlighted
-- Icons turn from grayscale to color when active
-- Position moves from left to right, top to bottom
+**During playback**:
+
+- The current slot is highlighted
+- Hit icons are grayscale except for the **active** slot (full color)
+- **Click a visible hit** (cymbal, snare, or kick) to preview that voice—it does not toggle the pattern
 
 ### Controls
 
-- **Mute Button**: Toggles audio on/off (top right)
-- **Edit Button**: Switches between view and edit modes (top right)
-- **Metronome Blinker**: Start/stop playback (green circle when active)
-- **Tempo Slider**: Adjust beats per minute (40-300 BPM)
-- **Beat Selector**: Choose from 42 predefined beats or random
+- **Mute button** (left in the button row): **Single tap** toggles whether the **metronome click** is heard. **Double tap** (second tap within a short window) toggles **mute everything**—metronome and drum hits. The icon reflects full volume, metronome-only mute, or full mute (see the button’s tooltip).
+- **16ths button** (center, large screens only): Toggles between showing **all sixteenth-note columns** and a **compressed eighth-note** view (8 columns).
+- **Edit button** (right): Switches between viewing the beat and editing it (check when in edit mode, pen when in view mode). **Escape** also exits edit mode.
+- **Metronome blinker**: Start/stop playback (green flash on downbeats when running)
+- **Tempo**: Slider and number field (40–300 BPM), plus **− / +** buttons
+- **Beat selector**: Dropdown (Beat 1–42 plus **Random**), dice/previous/next actions, and apply (checkmark) when using only the dropdown
 
 ## Basic Operations
 
@@ -74,11 +76,12 @@ The main display shows the current beat pattern:
 - **Active Position**: Highlighted during playback
 - **Beat Numbers**: Shows which beat you're on (1, 2, 3, 4)
 
-**Mobile View**:
-- Shows all 4 beats but only the downbeat (1) and eighth note (&) subdivisions: `1 & 2 & 3 & 4 &`
-- Desktop shows all 16 subdivisions: `1 e & a 2 e & a 3 e & a 4 e & a`
+**Subdivisions on screen**:
 
-### Editing Beats
+- Narrow viewports hide the **e** and **a** columns by default (sixteenth-note timing still drives playback)
+- From the **`sm`** breakpoint upward, all sixteen columns show unless you hide them with the **16ths** button
+
+### Editing beats
 
 1. **Enter Edit Mode**:
    - Click the Edit button (pencil icon)
@@ -103,10 +106,11 @@ The main display shows the current beat pattern:
 2. Choose a beat number (1-42) or "Random"
 3. Click the checkmark button to load
 
-**Using Arrow Buttons**:
-1. Click left arrow (◀) for previous beat
-2. Click right arrow (▶) for next beat
-3. Beat loads automatically when using arrows
+**Using arrow and dice buttons**:
+
+1. **Previous** loads the prior beat (stops at Beat 1)
+2. **Next** loads the following beat (stops at Beat 42)
+3. **Dice** picks a random beat and loads it immediately
 
 **Random Beat**:
 - Select "Random" from dropdown
@@ -143,10 +147,13 @@ The main display shows the current beat pattern:
    - Click the Import/Export toggle button
    - Export controls appear
 
-2. **Export Current Beat**:
-   - Click the download button (↓ icon)
+2. **Export current beat**:
+   - Click the download button
    - File downloads as `beat.json`
    - Success message appears
+
+3. **Save screenshot**:
+   - Click the screenshot control to download an image of the beat grid (useful for sharing the pattern without JSON)
 
 **Use Cases**:
 - Save edited beats
@@ -154,12 +161,11 @@ The main display shows the current beat pattern:
 - Backup favorite patterns
 - Create custom beat library
 
-### Muting Audio
+### Muting audio
 
-- Click the mute button (speaker icon) to toggle audio
-- Mutes both drum sounds and metronome beep
-- Visual indicator shows mute state
-- Useful for quiet practice or focusing on visual patterns
+- **Single tap** on the volume control: metronome click on/off (drum hits can still play)
+- **Double tap**: mute or unmute **everything** (metronome and drums)
+- Icon state shows which mode is active; hover/focus the control for the full hint
 
 ## Tips and Tricks
 

@@ -4,7 +4,7 @@ This document describes the state management approach in Visual Drumset, includi
 
 ## Overview
 
-Visual Drumset uses React Context API for state management, organized into four main context providers. This approach avoids prop drilling and provides a clean way to share state across components.
+Visual Drumset uses React Context for state, with **four providers** and small **`src/hooks/`** wrappers around each context. This avoids prop drilling and keeps access type-safe.
 
 ## Context Provider Hierarchy
 
@@ -13,15 +13,12 @@ The context providers are nested in a specific order:
 ```
 DrumsProvider
 └── IsPlayingProvider
-    └── EditingProvider
+    └── ButtonValuesProvider
         └── SoundsProvider
             └── [Application Components]
 ```
 
-This nesting order is important because:
-- Inner providers can access outer providers' contexts
-- Components receive all contexts through the provider tree
-- State updates are isolated to their respective contexts
+Nesting matters because inner consumers may read outer contexts, and **`BeatPlayer`** (inside **`SoundsProvider`**) coordinates **`playSound`** with **`useIsPlaying`** and **`useDrums`**.
 
 ## Context Providers
 
@@ -48,7 +45,7 @@ This nesting order is important because:
 
 **Usage**:
 ```typescript
-import { useDrums } from '@/context/useDrums';
+import { useDrums } from '@/hooks/useDrums';
 
 function MyComponent() {
   const { cymbals, snares, kicks, setCymbals, setSnares, setKicks } = useDrums();
@@ -86,7 +83,7 @@ function MyComponent() {
 
 **Usage**:
 ```typescript
-import { useIsPlaying } from '@/context/useIsPlaying';
+import { useIsPlaying } from '@/hooks/useIsPlaying';
 
 function MyComponent() {
   const { 
@@ -116,82 +113,67 @@ function MyComponent() {
 - Tracking playback position
 - Syncing visual indicators with playback
 
-### 3. EditingProvider
+### 3. ButtonValuesProvider
 
-**Location**: `src/context/Editing.tsx`
+**Location**: `src/context/buttonValues.tsx`
 
-**Purpose**: Manages edit mode state.
+**Purpose**: UI mode flags shared by the beat display and **`BeatPlayer`**.
 
 **State**:
-- `isEditing: boolean` - Whether the application is in edit mode
+- `isEditing: boolean` — edit mode vs read-only beat view
+- `isDisplaying16ths: boolean` — when `false`, grids use 8 columns (eighth-note slots); desktop users can toggle with **`Display16thsButton`**
 
 **Setters**:
-- `setIsEditing: Dispatch<SetStateAction<boolean>>`
+- `setIsEditing`, `setIsDisplaying16ths`
 
-**Special Features**:
-- Listens for Escape key to exit edit mode
-- Prevents playback while editing (checked by BeatPlayer)
+**Behaviour**:
+- **Escape** sets `isEditing` to `false`
+- **`BeatPlayer`** skips firing hits while `isEditing` is true
 
 **Usage**:
 ```typescript
-import { useEditing } from '@/context/useEditing';
+import { useButtonValues } from '@/hooks/useButtonValues';
 
 function MyComponent() {
-  const { isEditing, setIsEditing } = useEditing();
-  
-  // Toggle edit mode
-  setIsEditing(!isEditing);
-  
-  // Check if editing
-  if (isEditing) {
-    // Show edit UI
-  }
+  const { isEditing, setIsEditing, isDisplaying16ths, setIsDisplaying16ths } =
+    useButtonValues();
 }
 ```
-
-**When to Use**:
-- Toggling edit mode
-- Conditionally rendering edit vs. display components
-- Preventing actions during editing
 
 ### 4. SoundsProvider
 
 **Location**: `src/context/SoundsProvider.tsx`
 
-**Purpose**: Manages audio playback and Web Audio API.
+**Purpose**: Web Audio for drum voices, mute flags, and **`BeatPlayer`**.
 
 **State**:
-- `isMuted: boolean` - Whether audio is muted
+- `isMetronomeMuted: boolean` — silences only the metronome click (`Blinker`)
+- `isAllMuted: boolean` — silences click and all **`playSound`** output
 
-**Functions**:
-- `playSound: (drum: drums) => void` - Play a drum sound
-- `setIsMuted: Dispatch<SetStateAction<boolean>>`
+**API**:
+- `playSound(drum: drums)` — cymbal, snare, or bass
+- `setIsMetronomeMuted`, `setIsAllMuted`
 
-**Special Features**:
-- Manages AudioContext lifecycle
-- Initializes and warms up audio buffers
-- Handles AudioContext suspension/resume
-- Contains BeatPlayer component for automatic playback
+**Details**:
+- Lazy **`AudioContext`**, warm-up, reused noise buffers for cymbal/snare
+- Renders **`BeatPlayer`** with `playSound` prop
 
 **Usage**:
 ```typescript
-import { useSounds } from '@/context/useSounds';
+import { useSounds } from '@/hooks/useSounds';
 
 function MyComponent() {
-  const { playSound, isMuted, setIsMuted } = useSounds();
-  
-  // Play a sound
-  playSound('cymbal');
-  
-  // Toggle mute
-  setIsMuted(!isMuted);
+  const {
+    playSound,
+    isMetronomeMuted,
+    isAllMuted,
+    setIsMetronomeMuted,
+    setIsAllMuted,
+  } = useSounds();
 }
 ```
 
-**When to Use**:
-- Playing drum sounds programmatically
-- Managing mute state
-- Audio-related functionality
+See **`MuteButton`**: single tap toggles metronome mute; double tap toggles all mute (within a short window).
 
 ## Custom Hooks
 
@@ -218,13 +200,13 @@ export function useDrums() {
 
 Similar pattern for playback state.
 
-### useEditing
+### useButtonValues
 
-Similar pattern for edit mode state.
+Wraps `ButtonValuesContext`; throws if used outside **`ButtonValuesProvider`**.
 
 ### useSounds
 
-Similar pattern for audio state.
+Wraps `SoundsContext`; throws if used outside **`SoundsProvider`**.
 
 ## State Update Patterns
 
@@ -299,8 +281,8 @@ Components only re-render when the actual values change, not when the context ob
 
 1. User clicks edit button
 2. `EditButton` calls `setIsEditing(true)`
-3. `EditingProvider` updates `isEditing` state
-4. `VisualDisplay` conditionally renders `EditBeat` instead of `ShowBeat`
+3. `ButtonValuesProvider` updates `isEditing` state
+4. `BeatDisplay` renders `EditBeat` instead of `ShowBeat`
 5. User toggles checkboxes in edit components
 6. Edit components update `DrumsProvider` state
 7. Changes are immediately reflected
@@ -308,9 +290,9 @@ Components only re-render when the actual values change, not when the context ob
 ### Muting Audio
 
 1. User clicks mute button
-2. `MuteButton` calls `setIsMuted(!isMuted)`
-3. `SoundsProvider` updates `isMuted` state
-4. `playSound` checks `isMuted` and returns early if true
+2. `MuteButton` updates `isMetronomeMuted` and/or `isAllMuted`
+3. **`Blinker`** skips the beep when either mute flag applies
+4. **`playSound`** returns early when `isAllMuted` is true
 5. Visual mute indicator updates
 
 ## Best Practices
@@ -332,8 +314,8 @@ const context = useContext(DrumsContext);
 Each context should manage a single concern:
 - `DrumsProvider`: Drum patterns
 - `IsPlayingProvider`: Playback state
-- `EditingProvider`: Edit mode
-- `SoundsProvider`: Audio
+- `ButtonValuesProvider`: Edit mode and 16ths visibility
+- `SoundsProvider`: Audio and mute flags
 
 ### 3. Memoize Context Values
 
@@ -370,7 +352,7 @@ if (!context) {
 ### Conditional Rendering Based on State
 
 ```typescript
-const { isEditing } = useEditing();
+const { isEditing } = useButtonValues();
 const { isRunning } = useIsPlaying();
 
 return (
