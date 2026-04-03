@@ -140,24 +140,18 @@ className = 'flex flex-col sm:flex-row gap-4';
 </div>
 ```
 
-## Font Awesome Icons
+## Local SVG and PNG icons
 
-- **Icon library**: Use Font Awesome icons for UI icons (buttons, navigation, etc.)
-- **Import pattern**: Import icons directly from `@fortawesome/free-solid-svg-icons`
-- **Component usage**: Use `FontAwesomeIcon` component from `@fortawesome/react-fontawesome`
-- **Accessibility**: Always include `aria-hidden="true"` on decorative icons
-- **Size consistency**: Use consistent sizing classes or let CSS handle sizing
-- **Icon selection**: Prefer solid icons over regular/light variants
-- **Semantic meaning**: Choose icons that clearly represent their function
-- **Consistency**: Use similar icons for similar actions across the application
+- **UI assets**: SVG files under `public/icons/` (e.g. `play.svg`, `save.svg`); reference via **`Icon`** or **`IconButton`** with `filetype='svg'`
+- **Drum kit**: PNG under `public/icons/drumset/`; use **`DrumIcon`** or **`Icon`** with `filetype='png'`
+- **Accessibility**: Prefer **`title`** on **`IconButton`** for tooltips; add ARIA attributes when a control needs more than a title
 
-#### Font Awesome Usage Example
+#### Example
 
 ```tsx
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
+import IconButton from '@/components/IconButton';
 
-<FontAwesomeIcon icon={isRunning ? faStop : faPlay} aria-hidden='true' />;
+<IconButton icon='play' filetype='svg' title='Start' onClick={handleStart} />;
 ```
 
 ## Image Assets (PNG Icons)
@@ -201,32 +195,18 @@ The application uses custom CSS in `index.css` for specific patterns:
 }
 ```
 
-### VisualDisplay Responsive Behavior
+### VisualDisplay responsive behavior
 
-- **Minimum height**: `VisualDisplay` has `min-height: 14rem`
-- **Responsive display**: On mobile, even-numbered beat subdivisions are hidden (showing 1-&-3 only)
-- **Full display**: On `sm:` breakpoint and above, all 16 subdivisions are shown
+- **Minimum height**: `min-height: 14rem` on `.VisualDisplay`
+- **Default**: Even-index columns (e **a** slots) hidden until `sm`
+- **`sm` and up**: Those columns show unless `.hide-16ths` is present (`isDisplaying16ths === false`)
 
 ```css
 .VisualDisplay {
 	min-height: 14rem;
 }
 
-.VisualDisplay .Counts .Count:nth-of-type(even),
-.VisualDisplay .Cymbals .Cymbal:nth-of-type(even),
-.VisualDisplay .Snares .Snare:nth-of-type(even),
-.VisualDisplay .Kicks .Kick:nth-of-type(even) {
-	display: none;
-}
-
-@media (min-width: 640px) {
-	.VisualDisplay .Counts .Count:nth-of-type(even),
-	.VisualDisplay .Cymbals .Cymbal:nth-of-type(even),
-	.VisualDisplay .Snares .Snare:nth-of-type(even),
-	.VisualDisplay .Kicks .Kick:nth-of-type(even) {
-		display: block;
-	}
-}
+/* See src/index.css — uses :not(.hide-16ths) inside the sm media query */
 ```
 
 ### Global Styles

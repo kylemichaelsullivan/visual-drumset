@@ -10,43 +10,30 @@ alwaysApply: false
 
 ```
 src/components/
-├── App.tsx                    # Main application component with Body and Footer
-├── Body.tsx                   # Main content area with providers and components
-├── Footer.tsx                 # Site footer with copyright
+├── App.tsx, Body.tsx, Footer.tsx, Icon.tsx, IconButton.tsx, SkipLink.tsx
+├── globals/
+│   ├── VisualDisplay.tsx, BeatDisplay.tsx, Buttons.tsx, Button.tsx
+│   └── MuteButton.tsx, Display16thsButton.tsx, EditButton.tsx, Counts.tsx
 ├── displays/
-│   ├── VisualDisplay.tsx      # Container for beat display/edit mode
-│   ├── ShowBeat.tsx           # Visual representation of the current beat
-│   ├── Counts.tsx             # Beat count display (1-e-&-a)
-│   ├── Cymbals.tsx            # Cymbal display component
-│   ├── Snares.tsx             # Snare display component
-│   └── Kicks.tsx              # Kick/bass display component
+│   ├── ShowBeat.tsx, Cymbals.tsx, Snares.tsx, Kicks.tsx, DrumIcon.tsx
 ├── edits/
-│   ├── EditBeat.tsx           # Edit mode container for beat editing
-│   ├── EditButton.tsx         # Toggle button for edit/view mode
-│   ├── Cymbals.tsx            # Cymbal editing component
-│   ├── Snares.tsx             # Snare editing component
-│   └── Kicks.tsx              # Kick/bass editing component
+│   ├── EditBeat.tsx, Cymbals.tsx, Snares.tsx, Kicks.tsx
 ├── files/
-│   ├── IO.tsx                 # Container for Import/Export components
-│   ├── Import.tsx             # Beat import functionality
-│   ├── Export.tsx             # Beat export functionality
-│   ├── BeatSelector.tsx       # Main beat selector container
-│   ├── BeatSelectorSelect.tsx # Beat dropdown selector
-│   ├── BeatSelectorArrows.tsx # Navigation arrows for beats
-│   ├── BeatSelectorApply.tsx  # Apply selected beat button
-│   └── Zod.tsx                # Zod schema for beat validation
+│   ├── IO.tsx, ToggleIO.tsx, ContentIO.tsx, Import.tsx, Export.tsx
+│   ├── SaveScreenshot.tsx, ButtonIO.tsx, BeatSelector*.tsx, Zod.tsx
 └── metronome/
-    ├── Metronome.tsx          # Metronome container component
-    ├── Blinker.tsx            # Visual metronome blinker
-    └── Tempo.tsx              # Tempo control (BPM input)
+    ├── Metronome.tsx, MetronomeContent.tsx, Blinker.tsx, Tempo.tsx
+    └── ModifyTempoButton.tsx
 
 src/context/
-├── Drums.tsx                  # Drums context provider (cymbals, snares, kicks state)
-└── Editing.tsx                # Editing context provider (edit mode state)
+├── Drums.tsx, IsPlaying.tsx, buttonValues.tsx
+├── Sounds.tsx, SoundsProvider.tsx, BeatPlayer.tsx
+
+src/hooks/
+├── useDrums.ts, useIsPlaying.ts, useSounds.ts, useButtonValues.ts
 
 src/types/
-├── beat.ts                    # Beat type definitions (beat, BeatSelect)
-└── counts.ts                  # Count type definitions (counts, count)
+├── beat.ts, counts.ts, drums.ts, icon.ts
 ```
 
 ## Component Structure Guidelines
@@ -95,46 +82,13 @@ src/types/
 
 The application uses React Context for state management:
 
-### DrumsContext
+### Context access
 
-- **Provider**: `DrumsProvider` (`@/context/Drums`)
-- **Hook**: `useDrums()` - Returns `{ cymbals, snares, kicks, setCymbals, setSnares, setKicks }`
-- **State**: Manages drum beat patterns as `counts` type (4 beats × 4 subdivisions)
-- **Usage**: Wrap components that need access to drum state
+Import hooks from `@/hooks/...` (not from context files):
 
-```tsx
-import { DrumsProvider } from '@/context/Drums';
-import { useDrums } from '@/context/Drums';
+- `useDrums`, `useIsPlaying`, `useSounds`, `useButtonValues`
 
-// Provider usage
-<DrumsProvider>
-  <YourComponent />
-</DrumsProvider>
-
-// Hook usage
-const { cymbals, setCymbals } = useDrums();
-```
-
-### EditingContext
-
-- **Provider**: `EditingProvider` (`@/context/Editing`)
-- **Hook**: `useEditing()` - Returns `{ isEditing, setIsEditing }`
-- **State**: Manages edit/view mode toggle
-- **Features**: Listens for Escape key to exit edit mode
-- **Usage**: Wrap components that need editing state
-
-```tsx
-import { EditingProvider } from '@/context/Editing';
-import { useEditing } from '@/context/Editing';
-
-// Provider usage
-<EditingProvider>
-  <YourComponent />
-</EditingProvider>
-
-// Hook usage
-const { isEditing, setIsEditing } = useEditing();
-```
+Provider order matches `Body.tsx`: Drums → IsPlaying → ButtonValues → Sounds.
 
 ## Component Guidelines
 
@@ -212,45 +166,12 @@ export default ComponentName;
 
 ## Component Patterns
 
-### Layout Components
+### High-value paths
 
-- **App** (`@/components/App`) - Main application wrapper with Body and Footer
-- **Body** (`@/components/Body`) - Main content area with context providers and core components
-- **Footer** (`@/components/Footer`) - Site footer with copyright information
-
-### Display Components
-
-- **VisualDisplay** (`@/components/displays/VisualDisplay`) - Container for beat display/edit mode switching
-- **ShowBeat** (`@/components/displays/ShowBeat`) - Visual representation of the current beat pattern
-- **Counts** (`@/components/displays/Counts`) - Displays beat counts (1-e-&-a) above the drum patterns
-- **Cymbals** (`@/components/displays/Cymbals`) - Visual display of cymbal hits
-- **Snares** (`@/components/displays/Snares`) - Visual display of snare hits
-- **Kicks** (`@/components/displays/Kicks`) - Visual display of kick/bass hits
-
-### Edit Components
-
-- **EditBeat** (`@/components/edits/EditBeat`) - Edit mode container for beat editing interface
-- **EditButton** (`@/components/edits/EditButton`) - Toggle button for switching between edit/view modes
-- **Cymbals** (`@/components/edits/Cymbals`) - Interactive cymbal editing component
-- **Snares** (`@/components/edits/Snares`) - Interactive snare editing component
-- **Kicks** (`@/components/edits/Kicks`) - Interactive kick/bass editing component
-
-### File I/O Components
-
-- **IO** (`@/components/files/IO`) - Container for Import/Export components
-- **Import** (`@/components/files/Import`) - Beat import functionality (JSON file upload)
-- **Export** (`@/components/files/Export`) - Beat export functionality (JSON file download)
-- **BeatSelector** (`@/components/files/BeatSelector`) - Main beat selector container
-- **BeatSelectorSelect** (`@/components/files/BeatSelectorSelect`) - Dropdown for selecting beats
-- **BeatSelectorArrows** (`@/components/files/BeatSelectorArrows`) - Navigation arrows for beat selection
-- **BeatSelectorApply** (`@/components/files/BeatSelectorApply`) - Apply selected beat button
-- **Zod** (`@/components/files/Zod`) - Zod schema definitions for beat validation
-
-### Metronome Components
-
-- **Metronome** (`@/components/metronome/Metronome`) - Metronome container with BPM state
-- **Blinker** (`@/components/metronome/Blinker`) - Visual metronome blinker with start/stop controls
-- **Tempo** (`@/components/metronome/Tempo`) - Tempo control component (BPM input field)
+- **globals/VisualDisplay**, **globals/BeatDisplay**, **globals/Buttons**
+- **displays/DrumIcon** — preview sound on click
+- **files/SaveScreenshot** — html2canvas export
+- **metronome/MetronomeContent**, **ModifyTempoButton**
 
 ## Type Definitions
 
@@ -330,10 +251,9 @@ const exampleBeat: beat = {
 - **Graceful degradation**: Handle missing or invalid beat data gracefully
 - **Context error handling**: Context hooks throw errors if used outside provider - wrap appropriately
 
-### SVG Icons
+### Icons
 
-- **FontAwesome**: Use FontAwesome icons via `@fortawesome/react-fontawesome`
-- **Icon accessibility**: Include `aria-hidden='true'` for decorative icons
+- **Icon**, **IconButton**: local SVG (`public/icons/`) and drum PNG (`public/icons/drumset/`)
 
 ## Styling Guidelines
 
@@ -371,7 +291,7 @@ import clsx from 'clsx';
 
 ## Typography
 
-- **Typographic apostrophe**: Use ' instead of ' in all user-facing text
+- **Typographic apostrophe**: Use ’ instead of ' in all user-facing text
 - **Font styling**: Use Tailwind font utilities (`font-bold`, etc.)
 
 ## Component Testing

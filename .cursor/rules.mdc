@@ -12,7 +12,7 @@ alwaysApply: true
 - Prefer `bun run build` over `bun dev` for compilation
 - Use **TypeScript** with strict configuration
 - Follow **React 18** with **Vite** architecture
-- Use typographic apostrophe ' instead of straight apostrophe ' in ALL user-facing text
+- Use typographic apostrophe ’ instead of straight apostrophe ' in ALL user-facing text
 
 ## Package Management
 
@@ -46,54 +46,29 @@ alwaysApply: true
 
 ```
 src/
-├── components/          # React components
-│   ├── App.tsx         # Main application component
-│   ├── Body.tsx        # Main content area with providers
-│   ├── Footer.tsx      # Site footer with copyright
-│   ├── displays/       # Visual display components
-│   │   ├── VisualDisplay.tsx
-│   │   ├── ShowBeat.tsx
-│   │   ├── Counts.tsx
-│   │   ├── Cymbals.tsx
-│   │   ├── Snares.tsx
-│   │   └── Kicks.tsx
-│   ├── edits/          # Edit mode components
-│   │   ├── EditBeat.tsx
-│   │   ├── EditButton.tsx
-│   │   ├── Cymbals.tsx
-│   │   ├── Snares.tsx
-│   │   └── Kicks.tsx
-│   ├── files/          # File I/O components
-│   │   ├── IO.tsx
-│   │   ├── Import.tsx
-│   │   ├── Export.tsx
-│   │   ├── BeatSelector.tsx
-│   │   ├── BeatSelectorSelect.tsx
-│   │   ├── BeatSelectorArrows.tsx
-│   │   ├── BeatSelectorApply.tsx
-│   │   └── Zod.tsx
-│   └── metronome/      # Metronome components
-│       ├── Metronome.tsx
-│       ├── Blinker.tsx
-│       └── Tempo.tsx
-├── context/            # React Context providers
-│   ├── Drums.tsx       # Drums context (cymbals, snares, kicks)
-│   └── Editing.tsx     # Editing context (edit mode state)
-├── types/              # TypeScript type definitions
-│   ├── beat.ts         # Beat type definitions
-│   └── counts.ts       # Count type definitions
-├── main.tsx            # Application entry point
-└── index.css           # Global styles and Tailwind imports
+├── components/
+│   ├── App.tsx, Body.tsx, Footer.tsx, Icon.tsx, IconButton.tsx, SkipLink.tsx
+│   ├── displays/       # ShowBeat, Cymbals, Snares, Kicks, DrumIcon
+│   ├── edits/          # EditBeat + edit Cymbals/Snares/Kicks
+│   ├── files/          # BeatSelector*, IO, Import, Export, SaveScreenshot, Zod, …
+│   ├── globals/        # VisualDisplay, BeatDisplay, Buttons, Button, MuteButton,
+│   │                   # Display16thsButton, EditButton, Counts
+│   └── metronome/      # Metronome, MetronomeContent, Blinker, Tempo, ModifyTempoButton
+├── context/
+│   ├── Drums.tsx
+│   ├── IsPlaying.tsx
+│   ├── buttonValues.tsx    # isEditing, isDisplaying16ths (+ Escape)
+│   ├── Sounds.tsx + SoundsProvider.tsx
+│   └── BeatPlayer.tsx
+├── hooks/              # useDrums, useIsPlaying, useSounds, useButtonValues
+├── types/
+├── main.tsx
+├── index.css
+└── scripts.ts
 
 public/
-├── beats/              # Beat JSON files
-│   ├── beat-1.json
-│   └── ...
-├── icons/              # Drum icon images
-│   ├── cymbal.png
-│   ├── snare.png
-│   └── bass.png
-└── ...
+├── beats/              # beat-1.json … beat-42.json
+└── icons/              # UI .svg + drumset/cymbal.png, snare.png, bass.png
 ```
 
 ## Code Organization
@@ -117,13 +92,12 @@ import { useState, useContext } from 'react';
 
 // 2. Third-party libraries (alphabetically by source)
 import clsx from 'clsx';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay } from '@fortawesome/free-solid-svg-icons';
+import html2canvas from 'html2canvas';
 
 // 3. Internal project imports (alphabetically by path)
-import { useDrums } from '@/context/Drums';
-import { useEditing } from '@/context/Editing';
-import VisualDisplay from '@/components/displays/VisualDisplay';
+import { useDrums } from '@/hooks/useDrums';
+import { useButtonValues } from '@/hooks/useButtonValues';
+import VisualDisplay from '@/components/globals/VisualDisplay';
 
 // 4. React type imports (alphabetically by path)
 import type { ReactNode } from 'react';
@@ -207,22 +181,22 @@ export default ComponentName;
 
 ## State Management
 
-### Context Providers
+### Provider tree (see `Body.tsx`)
 
-- **DrumsContext**: Manages drum beat patterns (cymbals, snares, kicks)
-  - Provider: `DrumsProvider`
-  - Hook: `useDrums()`
-  - State: `counts` type (4 beats × 4 subdivisions)
+`DrumsProvider` → `IsPlayingProvider` → `ButtonValuesProvider` → `SoundsProvider`
 
-- **EditingContext**: Manages edit/view mode toggle
-  - Provider: `EditingProvider`
-  - Hook: `useEditing()`
-  - Features: Listens for Escape key to exit edit mode
+### Context + hooks (`src/hooks/`)
 
-### Local State
+- **DrumsContext** — `useDrums()` — patterns and setters
+- **IsPlayingContext** — `useIsPlaying()` — `isRunning`, `bpm`, position, setters
+- **ButtonValuesContext** — `useButtonValues()` — `isEditing`, `isDisplaying16ths` (Escape exits edit)
+- **SoundsContext** — `useSounds()` — `playSound`, `isMetronomeMuted`, `isAllMuted`, setters
 
-- **useState**: Use for component-local state (e.g., metronome BPM, UI toggles)
-- **Context for shared state**: Use Context providers for state shared across multiple components
+**BeatPlayer** is rendered inside `SoundsProvider` and receives `playSound`.
+
+### Local state
+
+- **useState** for purely local UI (e.g., IO panel open, beat dropdown selection)
 
 ## Type Definitions
 
@@ -287,7 +261,7 @@ export default ComponentName;
 
 ```tsx
 // ✅ Context hooks throw errors if used outside provider
-import { useDrums } from '@/context/Drums';
+import { useDrums } from '@/hooks/useDrums';
 
 function Component() {
   // This will throw if used outside DrumsProvider
@@ -307,22 +281,19 @@ function Component() {
 ### Validation Example
 
 ```tsx
-// ✅ Validate beat data with Zod
-import { beatSchema } from '@/components/files/Zod';
+// ✅ Validate beat arrays before applying (see Zod.tsx)
+import { isBeatValid } from '@/components/files/Zod';
 
-const validatedBeat = beatSchema.parse(importedData);
+if (!isBeatValid(cymbals, snares, kicks)) return;
 ```
 
 ## Icons and Assets
 
-### Icon Guidelines
+### Icon guidelines
 
-- **FontAwesome**: Use FontAwesome icons via `@fortawesome/react-fontawesome`
-- **PNG icons**: Use PNG icons from `public/icons/` for drum visualization
-  - `cymbal.png` - Cymbal icon
-  - `snare.png` - Snare icon
-  - `bass.png` - Kick/bass icon
-- **Icon accessibility**: Include `aria-hidden='true'` for decorative icons
+- **UI icons**: SVG files in `public/icons/` — use **`Icon`** / **`IconButton`** (`filetype='svg'`, `icon` name matches basename)
+- **Drum hits**: PNG in `public/icons/drumset/` — **`DrumIcon`** / **`Icon`** with `filetype='png'`
+- **Accessibility**: Decorative SVG controls use `aria-hidden='true'` where appropriate; drum **`Icon`** uses `alt` from the icon id
 
 ### Asset Guidelines
 

@@ -116,42 +116,35 @@ The application uses React Context for global state management:
 #### DrumsContext
 
 - **Provider**: `DrumsProvider` (`@/context/Drums`)
-- **Hook**: `useDrums()` - Returns `{ cymbals, snares, kicks, setCymbals, setSnares, setKicks }`
-- **State**: Manages drum beat patterns as `counts` type (4 beats × 4 subdivisions)
-- **Usage**: Wrap components that need access to drum state
+- **Hook**: `useDrums()` from `@/hooks/useDrums` — patterns + setters
 
-```typescript
-// ✅ Use DrumsProvider for global drum state
-import { DrumsProvider, useDrums } from '@/context/Drums';
+#### ButtonValuesContext
 
-// Provider usage
-<DrumsProvider>
-  <YourComponent />
-</DrumsProvider>
+- **Provider**: `ButtonValuesProvider` (`@/context/buttonValues`)
+- **Hook**: `useButtonValues()` from `@/hooks/useButtonValues`
+- **State**: `isEditing`, `isDisplaying16ths` (Escape clears edit mode)
 
-// Hook usage
-const { cymbals, setCymbals } = useDrums();
-```
+#### IsPlayingContext / SoundsContext
 
-#### EditingContext
+- **Hooks**: `useIsPlaying` and `useSounds` from `@/hooks/useIsPlaying`, `@/hooks/useSounds`
+- **Sounds** exposes `playSound`, `isMetronomeMuted`, `isAllMuted`
 
-- **Provider**: `EditingProvider` (`@/context/Editing`)
-- **Hook**: `useEditing()` - Returns `{ isEditing, setIsEditing }`
-- **State**: Manages edit/view mode toggle
-- **Features**: Listens for Escape key to exit edit mode
-- **Usage**: Wrap components that need editing state
+```tsx
+import { DrumsProvider } from '@/context/Drums';
+import { useDrums } from '@/hooks/useDrums';
 
-```typescript
-// ✅ Use EditingProvider for edit mode state
-import { EditingProvider, useEditing } from '@/context/Editing';
+export function Wrapped() {
+	return (
+		<DrumsProvider>
+			<YourComponent />
+		</DrumsProvider>
+	);
+}
 
-// Provider usage
-<EditingProvider>
-  <YourComponent />
-</EditingProvider>
-
-// Hook usage
-const { isEditing, setIsEditing } = useEditing();
+function YourComponent() {
+	const { cymbals, setCymbals } = useDrums();
+	return null;
+}
 ```
 
 ### Local State
@@ -187,7 +180,7 @@ function Metronome() {
 
 ```typescript
 // ✅ Use Context for shared state across multiple components
-import { useDrums } from '@/context/Drums';
+import { useDrums } from '@/hooks/useDrums';
 
 function EditBeat() {
   const { cymbals, setCymbals } = useDrums();
@@ -252,7 +245,7 @@ function BeatProcessor({ beat }: { beat: beat }) {
 
 ### Keyboard Shortcuts
 
-- **Escape key**: Used to exit edit mode (implemented in EditingContext)
+- **Escape key**: Exits edit mode (`ButtonValuesProvider`)
 - **Tab navigation**: Ensure all interactive elements are keyboard accessible
 - **Enter/Space**: Support standard button activation
 
@@ -266,18 +259,16 @@ function BeatProcessor({ beat }: { beat: beat }) {
 
 ## Visual Drumset-Specific Guidelines
 
-### Display Components
+### Display components
 
-- **VisualDisplay**: Container for beat display/edit mode switching
-- **ShowBeat**: Visual representation of the current beat pattern
-- **Counts**: Displays beat counts (1-e-&-a) above the drum patterns
-- **Cymbals/Snares/Kicks**: Visual display of individual drum hits
+- **VisualDisplay** (`globals/`): Buttons row, skip link, **BeatDisplay**
+- **ShowBeat**, **Cymbals/Snares/Kicks**, **DrumIcon** (`displays/`)
+- **Counts** (`globals/`)
 
-### Edit Components
+### Edit components
 
-- **EditBeat**: Edit mode container for beat editing interface
-- **EditButton**: Toggle button for switching between edit/view modes
-- **Cymbals/Snares/Kicks (edits)**: Interactive editing components for each drum type
+- **EditBeat** + edit rows (`edits/`)
+- **EditButton** (`globals/`)
 
 ### File I/O Components
 
@@ -286,28 +277,23 @@ function BeatProcessor({ beat }: { beat: beat }) {
 - **Export**: Beat export functionality (JSON file download)
 - **BeatSelector**: Beat selection and navigation components
 
-### Metronome Components
+### Metronome components
 
-- **Metronome**: Metronome container with BPM state
-- **Blinker**: Visual metronome blinker with start/stop controls
-- **Tempo**: Tempo control component (BPM input field)
+- **Metronome**, **MetronomeContent**, **Blinker**, **Tempo**, **ModifyTempoButton**
 
-### Layout Components
+### Layout
 
-- **App**: Main application wrapper with Body and Footer
-- **Body**: Main content area with context providers and core components
-- **Footer**: Site footer with copyright information
+- **App**, **Body** (provider tree), **Footer**
 
 ### Typography
 
-- **Typographic apostrophe**: Use ' instead of ' in all user-facing text
+- **Typographic apostrophe**: Use ’ instead of ' in all user-facing text
 - **Font styling**: Use Tailwind font utilities (`font-bold`, etc.)
 
 ### Icons
 
-- **FontAwesome**: Use FontAwesome icons via `@fortawesome/react-fontawesome`
-- **Icon accessibility**: Include `aria-hidden='true'` for decorative icons
-- **PNG icons**: Use PNG icons from `public/icons/` for drum visualization (cymbal.png, snare.png, bass.png)
+- **Icon / IconButton**: SVG from `public/icons/` or drum PNG from `public/icons/drumset/`
+- **Accessibility**: Decorative buttons — `aria-hidden='true'` where used; see existing **`Icon`** / **`DrumIcon`**
 
 ### Styling
 
@@ -339,65 +325,25 @@ function BeatProcessor({ beat }: { beat: beat }) {
 
 ## File Organization
 
-### Component Structure
+### Component layout (abbrev.)
 
 ```
 src/components/
-├── App.tsx                    # Main application component
-├── Body.tsx                   # Main content area with providers
-├── Footer.tsx                 # Site footer with copyright
-├── displays/
-│   ├── VisualDisplay.tsx      # Container for beat display/edit mode
-│   ├── ShowBeat.tsx           # Visual representation of beat
-│   ├── Counts.tsx             # Beat count display (1-e-&-a)
-│   ├── Cymbals.tsx            # Cymbal display component
-│   ├── Snares.tsx             # Snare display component
-│   └── Kicks.tsx              # Kick/bass display component
+├── App.tsx, Body.tsx, Footer.tsx, Icon.tsx, IconButton.tsx, SkipLink.tsx
+├── globals/     # VisualDisplay, BeatDisplay, Buttons, Counts, …
+├── displays/    # ShowBeat, Cymbals, Snares, Kicks, DrumIcon
 ├── edits/
-│   ├── EditBeat.tsx           # Edit mode container
-│   ├── EditButton.tsx         # Toggle button for edit/view mode
-│   ├── Cymbals.tsx            # Cymbal editing component
-│   ├── Snares.tsx             # Snare editing component
-│   └── Kicks.tsx              # Kick/bass editing component
-├── files/
-│   ├── IO.tsx                 # Container for Import/Export
-│   ├── Import.tsx             # Beat import functionality
-│   ├── Export.tsx             # Beat export functionality
-│   ├── BeatSelector.tsx       # Main beat selector container
-│   ├── BeatSelectorSelect.tsx # Beat dropdown selector
-│   ├── BeatSelectorArrows.tsx # Navigation arrows
-│   ├── BeatSelectorApply.tsx  # Apply selected beat button
-│   └── Zod.tsx                # Zod schema for beat validation
-└── metronome/
-    ├── Metronome.tsx          # Metronome container component
-    ├── Blinker.tsx            # Visual metronome blinker
-    └── Tempo.tsx              # Tempo control (BPM input)
+├── files/       # + SaveScreenshot, BeatSelectorActions, …
+└── metronome/   # + MetronomeContent, ModifyTempoButton
 ```
 
-### Context Structure
+### Context (`src/context/`)
 
-```
-src/context/
-├── Drums.tsx                  # Drums context provider (cymbals, snares, kicks)
-└── Editing.tsx                # Editing context provider (edit mode state)
-```
+`Drums`, `IsPlaying`, `buttonValues`, `Sounds` + `SoundsProvider`, `BeatPlayer`
 
-### Type Structure
+### Hooks (`src/hooks/`)
 
-```
-src/types/
-├── beat.ts                    # Beat type definitions (beat, BeatSelect)
-└── counts.ts                  # Count type definitions (counts, count)
-```
-
-### Entry Point
-
-```
-src/
-├── main.tsx                   # Application entry point with React.StrictMode
-├── index.css                  # Global styles and Tailwind imports
-└── scripts.ts                 # Additional scripts if needed
-```
+`useDrums`, `useIsPlaying`, `useSounds`, `useButtonValues`
 
 ## Development Workflow
 
