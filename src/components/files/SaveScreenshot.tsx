@@ -1,6 +1,38 @@
 import html2canvas from 'html2canvas';
 import ButtonIO from './ButtonIO';
 
+/**
+ * Clone has no `.VisualDisplay` ancestor, so reproduce hide-16ths slot rules from index.css.
+ * Extra vertical rhythm: parent of BeatDisplay uses `gap-4`; cells use `py-2` — bump padding so
+ * html2canvas matches the relaxed on-screen beat block.
+ */
+const CLONE_HIDE_16THS_CSS = `
+.BeatDisplay .Counts .Count:nth-of-type(even),
+.BeatDisplay .Cymbals .Cymbal:nth-of-type(even),
+.BeatDisplay .Snares .Snare:nth-of-type(even),
+.BeatDisplay .Kicks .Kick:nth-of-type(even) {
+	display: none !important;
+}
+.BeatDisplay {
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 1rem !important;
+}
+.BeatDisplay .Counts {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	min-height: 44px;
+	box-sizing: border-box;
+}
+.BeatDisplay .Cymbals .Cymbal,
+.BeatDisplay .Snares .Snare,
+.BeatDisplay .Kicks .Kick {
+	padding-top: 12px !important;
+	padding-bottom: 12px !important;
+	box-sizing: border-box;
+}
+`;
+
 function SaveScreenshot() {
 	async function handleSaveScreenshot() {
 		const beatDisplayElement = document.querySelector(
@@ -11,7 +43,6 @@ function SaveScreenshot() {
 			return;
 		}
 
-		// Fixed so screenshots are consistent regardless of viewport
 		const targetWidth = 768;
 		const rowHeight = 50;
 		const countsHeight = 40;
@@ -28,11 +59,8 @@ function SaveScreenshot() {
 			const canvas = await html2canvas(beatDisplayElement, {
 				backgroundColor: '#ffffff',
 				useCORS: true,
-				scale: 1, // Fixed scale to prevent viewport-dependent scaling
+				scale: 1,
 				onclone: (clonedDoc, clonedElement) => {
-					// Remove CSS rules that use unsupported "oklch" color or viewport units.
-					// This keeps the layout/styles intact while avoiding html2canvas parse errors
-					// and ensuring consistent screenshots regardless of viewport size.
 					const styleSheets = Array.from(clonedDoc.styleSheets);
 					for (const sheet of styleSheets) {
 						try {
@@ -50,146 +78,189 @@ function SaveScreenshot() {
 								}
 							}
 						} catch {
-							// Ignore cross-origin or read-only stylesheets
+							// Cross-origin or read-only stylesheets
 						}
 					}
 
-					const element = clonedElement as HTMLElement;
-					element.style.cssText = '';
-					element.style.width = `${targetWidth}px`;
-					element.style.display = 'flex';
-					element.style.flexDirection = 'column';
-					element.style.boxSizing = 'border-box';
-					element.style.margin = '0';
-					element.style.padding = '0';
+					const root = clonedElement as HTMLElement;
 
-					const counts = element.querySelector('.Counts') as HTMLElement;
+					const fixIcons = () => {
+						const instruments = ['Cymbals', 'Snares', 'Kicks'] as const;
+						for (const gridClass of instruments) {
+							const grid = root.querySelector(`.${gridClass}`);
+							if (!grid) continue;
+							grid.querySelectorAll('.IconButton').forEach((btn) => {
+								const el = btn as HTMLElement;
+								el.style.width = `${iconSize}px`;
+								el.style.height = `${iconSize}px`;
+								el.style.maxWidth = `${iconSize}px`;
+								el.style.maxHeight = `${iconSize}px`;
+								el.style.minWidth = `${iconSize}px`;
+								el.style.minHeight = `${iconSize}px`;
+								el.style.boxSizing = 'border-box';
+								el.style.marginLeft = 'auto';
+								el.style.marginRight = 'auto';
+							});
+							grid.querySelectorAll('.Icon').forEach((icon) => {
+								const el = icon as HTMLImageElement;
+								el.style.width = `${iconSize}px`;
+								el.style.height = `${iconSize}px`;
+								el.style.maxWidth = `${iconSize}px`;
+								el.style.maxHeight = `${iconSize}px`;
+								el.style.objectFit = 'contain';
+							});
+						}
+					};
+
+					// Hidden 16ths: match on-screen layout (grid + nth-of-type(even) hidden), not a custom flex rewrite.
+					if (!isDisplaying16ths) {
+						const tag = clonedDoc.createElement('style');
+						tag.setAttribute('data-screenshot-hide-16ths', '');
+						tag.textContent = CLONE_HIDE_16THS_CSS;
+						clonedDoc.head.appendChild(tag);
+
+						root.style.width = `${targetWidth}px`;
+						root.style.maxWidth = `${targetWidth}px`;
+						root.style.boxSizing = 'border-box';
+
+						const counts = root.querySelector('.Counts') as HTMLElement;
+						if (counts) {
+							counts.style.fontSize = `${fontSize}px`;
+							counts.querySelectorAll('.Count').forEach((cell) => {
+								const el = cell as HTMLElement;
+								el.style.color = '#111827';
+							});
+						}
+
+						fixIcons();
+						return;
+					}
+
+					// Showing 16ths: fixed-width flex layout (html2canvas is more reliable here than grid for some builds).
+					root.className = '';
+					root.style.cssText = '';
+					root.style.width = `${targetWidth}px`;
+					root.style.display = 'flex';
+					root.style.flexDirection = 'column';
+					root.style.gap = '0';
+					root.style.boxSizing = 'border-box';
+					root.style.margin = '0';
+					root.style.padding = '0';
+
+					const rowBase: Partial<CSSStyleDeclaration> = {
+						display: 'flex',
+						flexDirection: 'row',
+						flexWrap: 'nowrap',
+						alignItems: 'stretch',
+						justifyContent: 'flex-start',
+						width: `${targetWidth}px`,
+						boxSizing: 'border-box',
+						margin: '0',
+						padding: '0',
+					};
+
+					const setCellWidth = (el: HTMLElement) => {
+						el.style.flex = `0 0 ${cellWidth}px`;
+						el.style.flexShrink = '0';
+						el.style.flexGrow = '0';
+						el.style.width = `${cellWidth}px`;
+						el.style.minWidth = `${cellWidth}px`;
+						el.style.maxWidth = `${cellWidth}px`;
+					};
+
+					const counts = root.querySelector('.Counts') as HTMLElement;
 					if (counts) {
-						counts.style.cssText = '';
-						counts.style.width = `${targetWidth}px`;
+						counts.className = '';
+						Object.assign(counts.style, rowBase);
 						counts.style.height = `${countsHeight}px`;
-						counts.style.display = 'grid';
-						counts.style.gridTemplateColumns = `repeat(${gridCols}, ${cellWidth}px)`;
-						counts.style.boxSizing = 'border-box';
-						counts.style.margin = '0';
-						counts.style.padding = '0';
 						counts.style.borderBottom = '1px solid #e5e7eb';
 
-						const countCells = counts.querySelectorAll('.Count');
-						countCells.forEach((cell, index) => {
-							const cellEl = cell as HTMLElement;
-							cellEl.style.cssText = '';
-							// Hide even cells when hide-16ths is active (even = e and a)
-							if (!isDisplaying16ths && index % 2 === 1) {
-								cellEl.style.display = 'none';
-							} else {
-								cellEl.style.width = `${cellWidth}px`;
-								cellEl.style.height = `${countsHeight}px`;
-								cellEl.style.display = 'flex';
-								cellEl.style.alignItems = 'center';
-								cellEl.style.justifyContent = 'center';
-								cellEl.style.boxSizing = 'border-box';
-								cellEl.style.margin = '0';
-								cellEl.style.padding = '0';
-								cellEl.style.fontSize = `${fontSize}px`;
-								cellEl.style.lineHeight = '1';
-								const textContent = cellEl.textContent;
-								if (textContent) {
-									cellEl.style.color = '#111827';
-								}
-							}
+						counts.querySelectorAll('.Count').forEach((cell) => {
+							const el = cell as HTMLElement;
+							el.className = '';
+							el.style.cssText = '';
+							setCellWidth(el);
+							el.style.height = `${countsHeight}px`;
+							el.style.display = 'flex';
+							el.style.alignItems = 'center';
+							el.style.justifyContent = 'center';
+							el.style.boxSizing = 'border-box';
+							el.style.margin = '0';
+							el.style.padding = '0';
+							el.style.fontSize = `${fontSize}px`;
+							el.style.lineHeight = '1';
+							el.style.color = '#111827';
 						});
 					}
 
-					const componentMap: Record<string, string> = {
-						Cymbals: 'Cymbal',
-						Snares: 'Snare',
-						Kicks: 'Kick',
-					};
-					const componentClasses = ['Cymbals', 'Snares', 'Kicks'];
-					componentClasses.forEach((className) => {
-						const grid = element.querySelector(`.${className}`) as HTMLElement;
-						if (grid) {
-							grid.style.cssText = '';
-							grid.style.width = `${targetWidth}px`;
-							grid.style.height = `${rowHeight}px`;
-							grid.style.display = 'grid';
-							grid.style.gridTemplateColumns = `repeat(${gridCols}, ${cellWidth}px)`;
-							grid.style.boxSizing = 'border-box';
-							grid.style.margin = '0';
-							grid.style.padding = '0';
+					const instruments: [string, string][] = [
+						['Cymbals', 'Cymbal'],
+						['Snares', 'Snare'],
+						['Kicks', 'Kick'],
+					];
+					for (const [gridClass, cellClass] of instruments) {
+						const grid = root.querySelector(`.${gridClass}`) as HTMLElement;
+						if (!grid) continue;
 
-							const cellClass = componentMap[className];
-							const cells = grid.querySelectorAll(`.${cellClass}`);
-							cells.forEach((cell, index) => {
-								const cellEl = cell as HTMLElement;
-								cellEl.style.cssText = '';
-								// Hide even cells (e and a)
-								if (!isDisplaying16ths && index % 2 === 1) {
-									cellEl.style.display = 'none';
-								} else {
-									cellEl.style.width = `${cellWidth}px`;
-									cellEl.style.height = `${rowHeight}px`;
-									cellEl.style.display = 'flex';
-									cellEl.style.alignItems = 'center';
-									cellEl.style.justifyContent = 'center';
-									cellEl.style.boxSizing = 'border-box';
-									cellEl.style.margin = '0';
-									cellEl.style.padding = '8px 0'; // Fixed padding in pixels, not rem
-								}
-							});
+						grid.className = '';
+						Object.assign(grid.style, rowBase);
+						grid.style.height = `${rowHeight}px`;
 
-							// Hardcode icon buttons and icons
-							const iconButtons = grid.querySelectorAll('.IconButton');
-							iconButtons.forEach((btn) => {
-								const btnEl = btn as HTMLElement;
-								btnEl.style.cssText = '';
-								btnEl.style.width = `${iconSize}px`;
-								btnEl.style.height = `${iconSize}px`;
-								btnEl.style.maxWidth = `${iconSize}px`; // Override 5vw
-								btnEl.style.maxHeight = `${iconSize}px`; // Override 10vw
-								btnEl.style.minWidth = `${iconSize}px`;
-								btnEl.style.minHeight = `${iconSize}px`;
-								btnEl.style.display = 'flex';
-								btnEl.style.alignItems = 'center';
-								btnEl.style.justifyContent = 'center';
-								btnEl.style.boxSizing = 'border-box';
-								btnEl.style.margin = '0 auto';
-								btnEl.style.padding = '0';
-								btnEl.style.border = '0';
-								btnEl.style.background = 'transparent';
-							});
+						grid.querySelectorAll(`.${cellClass}`).forEach((cell) => {
+							const el = cell as HTMLElement;
+							el.className = '';
+							el.style.cssText = '';
+							setCellWidth(el);
+							el.style.height = `${rowHeight}px`;
+							el.style.display = 'flex';
+							el.style.alignItems = 'center';
+							el.style.justifyContent = 'center';
+							el.style.boxSizing = 'border-box';
+							el.style.margin = '0';
+							el.style.padding = '8px 0';
+						});
 
-							const icons = grid.querySelectorAll('.Icon');
-							icons.forEach((icon) => {
-								const iconEl = icon as HTMLImageElement;
-								iconEl.style.cssText = '';
-								iconEl.style.width = `${iconSize}px`;
-								iconEl.style.height = `${iconSize}px`;
-								iconEl.style.maxWidth = `${iconSize}px`;
-								iconEl.style.maxHeight = `${iconSize}px`;
-								iconEl.style.display = 'block';
-								iconEl.style.margin = '0 auto';
-								iconEl.style.objectFit = 'contain';
-							});
-						}
-					});
+						grid.querySelectorAll('.IconButton').forEach((btn) => {
+							const el = btn as HTMLElement;
+							el.className = '';
+							el.style.cssText = '';
+							el.style.width = `${iconSize}px`;
+							el.style.height = `${iconSize}px`;
+							el.style.maxWidth = `${iconSize}px`;
+							el.style.maxHeight = `${iconSize}px`;
+							el.style.minWidth = `${iconSize}px`;
+							el.style.minHeight = `${iconSize}px`;
+							el.style.display = 'flex';
+							el.style.alignItems = 'center';
+							el.style.justifyContent = 'center';
+							el.style.boxSizing = 'border-box';
+							el.style.margin = '0 auto';
+							el.style.padding = '0';
+							el.style.border = '0';
+							el.style.background = 'transparent';
+						});
+
+						grid.querySelectorAll('.Icon').forEach((icon) => {
+							const el = icon as HTMLImageElement;
+							el.className = '';
+							el.style.cssText = '';
+							el.style.width = `${iconSize}px`;
+							el.style.height = `${iconSize}px`;
+							el.style.maxWidth = `${iconSize}px`;
+							el.style.maxHeight = `${iconSize}px`;
+							el.style.display = 'block';
+							el.style.margin = '0 auto';
+							el.style.objectFit = 'contain';
+						});
+					}
 				},
 			});
 
-			// Use the canvas exactly as rendered by html2canvas so the screenshot
-			// matches the on-screen BeatDisplay without stretching/cropping.
-			const finalCanvas = canvas;
-
-			const dataUri = finalCanvas.toDataURL('image/png');
-			const defaultFilename = 'beat.png';
-
+			const dataUri = canvas.toDataURL('image/png');
 			const linkElement = document.createElement('a');
 			linkElement.setAttribute('href', dataUri);
-			linkElement.setAttribute('download', defaultFilename);
+			linkElement.setAttribute('download', 'beat.png');
 			linkElement.click();
-
-			alert('Screenshot saved successfully.');
 		} catch (error) {
 			console.error('Error capturing screenshot:', error);
 			alert('Failed to save screenshot.');
