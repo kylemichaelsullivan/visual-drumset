@@ -156,15 +156,32 @@ export function SoundsProvider({ children }: SoundsProviderProps) {
 					playNoise(buffer, 850, ctx);
 				}
 			} else if (drum === 'bass') {
-				const o = ctx.createOscillator();
-				const g = ctx.createGain();
-				o.type = 'sine';
-				o.frequency.value = 110;
-				g.gain.setValueAtTime(1, ctx.currentTime);
-				g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-				o.connect(g).connect(ctx.destination);
-				o.start();
-				o.stop(ctx.currentTime + 0.2);
+				const t = ctx.currentTime;
+				const duration = 0.2;
+				const baseHz = 110;
+				const fifthHz = baseHz * (3 / 2); // perfect fifth above
+				const octaveHz = baseHz * 2; // octave above
+				const partialLevel = 0.28;
+
+				const master = ctx.createGain();
+				master.gain.setValueAtTime(1, t);
+				master.gain.exponentialRampToValueAtTime(0.001, t + duration);
+				master.connect(ctx.destination);
+
+				const startSine = (frequency: number, level: number) => {
+					const o = ctx.createOscillator();
+					const g = ctx.createGain();
+					o.type = 'sine';
+					o.frequency.value = frequency;
+					g.gain.value = level;
+					o.connect(g).connect(master);
+					o.start();
+					o.stop(t + duration);
+				};
+
+				startSine(baseHz, 1);
+				startSine(fifthHz, partialLevel);
+				startSine(octaveHz, partialLevel);
 			}
 		},
 		[initializeNoiseBuffers]
