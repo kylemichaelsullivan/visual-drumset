@@ -15,7 +15,7 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 	const [isLit, setIsLit] = useState(false);
 	const audioContextRef = useRef<AudioContext | null>(null);
 	const positionRef = useRef({ beat: 0, subdivision: 0 });
-	const { isMuted } = useSounds();
+	const { isMetronomeMuted, isAllMuted } = useSounds();
 
 	const getAudioContext = useCallback(() => {
 		if (!audioContextRef.current) {
@@ -25,7 +25,7 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 	}, []);
 
 	const beep = useCallback(() => {
-		if (isMuted) return;
+		if (isAllMuted || isMetronomeMuted) return;
 
 		try {
 			const context = getAudioContext();
@@ -46,7 +46,7 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 		} catch {
 			// Silently handle audio errors
 		}
-	}, [getAudioContext, isMuted]);
+	}, [getAudioContext, isAllMuted, isMetronomeMuted]);
 
 	const flash = useCallback(() => {
 		setIsLit(true);

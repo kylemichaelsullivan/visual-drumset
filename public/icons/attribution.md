@@ -17,4 +17,4 @@
 - skip-back.svg (skip-back-1130056/)
 - skip-forward (skip-forward-1130055/)
 - upload.svg (upload-1157132/)
-- volume.svg (volume-993436/)
+- full-volume.svg, half-volume.svg (volume-993436/)

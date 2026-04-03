@@ -9,8 +9,10 @@ export type IconType =
 	| 'close'
 	| 'dice'
 	| 'download'
+	| 'full-volume'
 	| 'glasses-hide'
 	| 'glasses-show'
+	| 'half-volume'
 	| 'minus'
 	| 'mute'
 	| 'pen'
@@ -19,5 +21,4 @@ export type IconType =
 	| 'screenshot'
 	| 'skip-back'
 	| 'skip-forward'
-	| 'upload'
-	| 'volume';
+	| 'upload';

@@ -43,7 +43,8 @@ export function SoundsProvider({ children }: SoundsProviderProps) {
 	});
 	const isInitializedRef = useRef<boolean>(false);
 	const isReadyRef = useRef<boolean>(false);
-	const [isMuted, setIsMuted] = useState<boolean>(false);
+	const [isMetronomeMuted, setIsMetronomeMuted] = useState<boolean>(false);
+	const [isAllMuted, setIsAllMuted] = useState<boolean>(false);
 
 	const getAudioContext = useCallback(() => {
 		if (!audioContextRef.current) {
@@ -189,7 +190,7 @@ export function SoundsProvider({ children }: SoundsProviderProps) {
 
 	const playSound = useCallback(
 		(drum: drums) => {
-			if (isMuted) return;
+			if (isAllMuted) return;
 
 			try {
 				const ctx = getAudioContext();
@@ -233,7 +234,7 @@ export function SoundsProvider({ children }: SoundsProviderProps) {
 				// Silently handle audio errors
 			}
 		},
-		[getAudioContext, initializeNoiseBuffers, playSoundInternal, isMuted]
+		[getAudioContext, initializeNoiseBuffers, playSoundInternal, isAllMuted]
 	);
 
 	useEffect(() => {
@@ -249,8 +250,14 @@ export function SoundsProvider({ children }: SoundsProviderProps) {
 	}, []);
 
 	const value = useMemo(
-		() => ({ playSound, isMuted, setIsMuted }),
-		[playSound, isMuted]
+		() => ({
+			playSound,
+			isMetronomeMuted,
+			isAllMuted,
+			setIsMetronomeMuted,
+			setIsAllMuted,
+		}),
+		[playSound, isMetronomeMuted, isAllMuted]
 	);
 
 	return (

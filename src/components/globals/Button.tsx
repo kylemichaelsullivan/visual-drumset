@@ -9,6 +9,7 @@ interface ButtonProps {
 	title?: string;
 	onClick?: () => void;
 	onMouseDown?: () => void;
+	onPointerDown?: () => void;
 }
 
 function Button({
@@ -18,6 +19,7 @@ function Button({
 	title,
 	onClick,
 	onMouseDown,
+	onPointerDown,
 }: ButtonProps) {
 	return (
 		<IconButton
@@ -32,6 +34,7 @@ function Button({
 			title={title}
 			onClick={onClick}
 			onMouseDown={onMouseDown}
+			onPointerDown={onPointerDown}
 		/>
 	);
 }

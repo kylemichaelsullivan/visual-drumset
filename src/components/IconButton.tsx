@@ -10,6 +10,7 @@ type IconButtonProps = {
 	title?: string;
 	onClick?: () => void;
 	onMouseDown?: () => void;
+	onPointerDown?: () => void;
 };
 
 function IconButton({
@@ -20,6 +21,7 @@ function IconButton({
 	title,
 	onClick,
 	onMouseDown,
+	onPointerDown,
 }: IconButtonProps) {
 	const sizeClasses: Record<IconSize, string> = {
 		sm: 'w-6 h-6',
@@ -38,6 +40,7 @@ function IconButton({
 			title={title}
 			onClick={onClick}
 			onMouseDown={onMouseDown}
+			onPointerDown={onPointerDown}
 		>
 			<Icon icon={icon} filetype={filetype} size={size} />
 		</button>
