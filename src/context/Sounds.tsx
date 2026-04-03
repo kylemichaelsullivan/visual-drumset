@@ -5,9 +5,7 @@ export type SoundsContextType = {
 	isMetronomeMuted: boolean;
 	isAllMuted: boolean;
 	playSound: (drum: drums) => void;
-	setIsMetronomeMuted: (
-		value: boolean | ((prev: boolean) => boolean)
-	) => void;
+	setIsMetronomeMuted: (value: boolean | ((prev: boolean) => boolean)) => void;
 	setIsAllMuted: (value: boolean | ((prev: boolean) => boolean)) => void;
 };
 
