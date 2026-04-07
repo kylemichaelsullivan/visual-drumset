@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { ICON_SIZE_CLASSES } from '@/constants/iconSizes';
 import Icon from './Icon';
 import type { IconSize, IconType } from '@/types/icon';
 
@@ -8,6 +9,7 @@ type IconButtonProps = {
 	className?: string;
 	size?: IconSize;
 	title?: string;
+	padded?: boolean;
 	onClick?: () => void;
 	onMouseDown?: () => void;
 	onPointerDown?: () => void;
@@ -19,22 +21,17 @@ function IconButton({
 	className,
 	size = 'md',
 	title,
+	padded = false,
 	onClick,
 	onMouseDown,
 	onPointerDown,
 }: IconButtonProps) {
-	const sizeClasses: Record<IconSize, string> = {
-		sm: 'w-6 h-6',
-		md: 'w-8 h-8',
-		lg: 'w-10 h-10',
-	};
-
 	return (
 		<button
 			type='button'
 			className={clsx(
-				'IconButton flex justify-center items-center bg-transparent border-0 p-0',
-				sizeClasses[size],
+				'IconButton flex justify-center items-center bg-transparent border-0 aspect-square',
+				padded ? 'p-1' : clsx('p-0', ICON_SIZE_CLASSES[size]),
 				className
 			)}
 			title={title}

@@ -1,11 +1,6 @@
 import clsx from 'clsx';
+import { ICON_SIZE_CLASSES } from '@/constants/iconSizes';
 import type { IconSize, IconType } from '@/types/icon';
-
-const sizeClasses: Record<IconSize, string> = {
-	sm: 'w-4 h-4',
-	md: 'w-6 h-6',
-	lg: 'w-8 h-8',
-};
 
 type IconProps = {
 	icon: IconType;
@@ -23,7 +18,11 @@ function Icon({ icon, filetype, size = 'sm', className }: IconProps) {
 	return (
 		<img
 			src={path}
-			className={clsx('Icon block mx-auto', sizeClasses[size], className)}
+			className={clsx(
+				'Icon block mx-auto aspect-square object-contain',
+				ICON_SIZE_CLASSES[size],
+				className
+			)}
 			alt={icon}
 		/>
 	);
