@@ -107,7 +107,7 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 	return (
 		<button
 			type='button'
-			className='Blinker flex justify-center items-center rounded-full w-8 h-8 hover:ring-1'
+			className='Blinker flex justify-center items-center rounded-full w-10 h-10 p-1 hover:ring-1'
 			title={isRunning ? 'Stop Metronome' : 'Start Metronome'}
 			onMouseDown={() => setIsRunning(() => !isRunning)}
 		>

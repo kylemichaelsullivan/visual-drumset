@@ -45,8 +45,8 @@ select {
 }
 
 .VisualDisplay :not(.Buttons) .IconButton {
-	max-width: 5vw;
-	max-height: 10vw;
+	max-width: min(5vw, 2rem);
+	max-height: min(5vw, 2rem);
 	margin-inline: auto;
 }
 

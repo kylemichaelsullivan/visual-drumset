@@ -10,7 +10,7 @@ type BeatSelectorArrowsProps = {
 
 type ButtonConfig = {
 	icon: BeatSelectorArrowsIcon;
-	size: 'md' | 'lg';
+	size: 'lg' | 'xl';
 	title: string;
 	direction: BeatSelectorArrowsDirection;
 };
@@ -18,19 +18,19 @@ type ButtonConfig = {
 const BUTTON_CONFIGS: ButtonConfig[] = [
 	{
 		icon: 'skip-back',
-		size: 'md',
+		size: 'lg',
 		title: 'Previous Beat',
 		direction: 'L',
 	},
 	{
 		icon: 'dice',
-		size: 'lg',
+		size: 'xl',
 		title: 'Random Beat',
 		direction: 'random',
 	},
 	{
 		icon: 'skip-forward',
-		size: 'md',
+		size: 'lg',
 		title: 'Next Beat',
 		direction: 'R',
 	},

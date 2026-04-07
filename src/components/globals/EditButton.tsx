@@ -8,7 +8,7 @@ function EditButton() {
 		<Button
 			icon={isEditing ? 'check' : 'pen'}
 			componentName='EditButton'
-			size='md'
+			size='sm'
 			title={isEditing ? 'See Beat' : 'Edit Beat'}
 			onMouseDown={() => setIsEditing(() => !isEditing)}
 		/>

@@ -21,6 +21,9 @@ function Button({
 	onMouseDown,
 	onPointerDown,
 }: ButtonProps) {
+	const padded =
+		componentName === 'MuteButton' || componentName === 'EditButton';
+
 	return (
 		<IconButton
 			className={clsx(
@@ -30,6 +33,7 @@ function Button({
 			)}
 			icon={icon}
 			filetype='svg'
+			padded={padded}
 			size={size}
 			title={title}
 			onClick={onClick}

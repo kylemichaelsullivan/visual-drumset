@@ -86,7 +86,7 @@ function MuteButton() {
 		<Button
 			icon={icon}
 			componentName='MuteButton'
-			size='md'
+			size='sm'
 			title={title}
 			onPointerDown={handlePointerDown}
 		/>

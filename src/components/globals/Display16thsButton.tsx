@@ -9,7 +9,7 @@ function Display16thsButton() {
 			<Button
 				icon={isDisplaying16ths ? 'glasses-show' : 'glasses-hide'}
 				componentName='Display16thsButton'
-				size='lg'
+				size='md'
 				title={isDisplaying16ths ? 'Hide 16ths?' : 'Show 16ths?'}
 				onClick={() => {
 					setIsDisplaying16ths(!isDisplaying16ths);
