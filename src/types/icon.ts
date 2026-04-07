@@ -1,6 +1,6 @@
 import type { drums } from '@/types/drums';
 
-export type IconSize = 'sm' | 'md' | 'lg';
+export type IconSize = 'sm' | 'md' | 'lg' | 'xl';
 
 export type IconType =
 	| drums
