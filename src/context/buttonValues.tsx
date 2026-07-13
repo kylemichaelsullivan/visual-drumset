@@ -18,7 +18,7 @@ type ButtonValuesProviderProps = {
 
 export function ButtonValuesProvider({ children }: ButtonValuesProviderProps) {
 	const [isEditing, setIsEditing] = useState(false);
-	const [isDisplaying16ths, setIsDisplaying16ths] = useState(true);
+	const [isDisplaying16ths, setIsDisplaying16ths] = useState(false);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
