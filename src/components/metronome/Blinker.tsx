@@ -13,8 +13,10 @@ type BlinkerProps = {
 
 function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 	const [isLit, setIsLit] = useState(false);
+	const [isCountingIn, setIsCountingIn] = useState(false);
 	const audioContextRef = useRef<AudioContext | null>(null);
 	const positionRef = useRef({ beat: 0, subdivision: 0 });
+	const countInTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 	const { isMetronomeMuted, isAllMuted } = useSounds();
 
 	const getAudioContext = useCallback(() => {
@@ -55,8 +57,48 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 		}, 100);
 	}, []);
 
+	const clearCountIn = useCallback(() => {
+		countInTimersRef.current.forEach(clearTimeout);
+		countInTimersRef.current = [];
+		setIsCountingIn(false);
+	}, []);
+
+	const startCountIn = useCallback(() => {
+		clearCountIn();
+		setIsCountingIn(true);
+
+		const beatInterval = (60 / bpm) * 1000;
+
+		// Four count-in clicks at the current tempo, then start playback.
+		for (let i = 0; i < 4; i++) {
+			const timer = setTimeout(() => {
+				beep();
+				flash();
+			}, i * beatInterval);
+			countInTimersRef.current.push(timer);
+		}
+
+		const startTimer = setTimeout(() => {
+			countInTimersRef.current = [];
+			setIsCountingIn(false);
+			setIsRunning(true);
+		}, 4 * beatInterval);
+		countInTimersRef.current.push(startTimer);
+	}, [bpm, beep, flash, clearCountIn, setIsRunning]);
+
+	const handleToggle = useCallback(() => {
+		if (isRunning || isCountingIn) {
+			clearCountIn();
+			setIsRunning(false);
+			return;
+		}
+
+		startCountIn();
+	}, [isRunning, isCountingIn, clearCountIn, setIsRunning, startCountIn]);
+
 	useEffect(() => {
 		return () => {
+			clearCountIn();
 			// Clean up AudioContext on unmount
 			if (audioContextRef.current) {
 				audioContextRef.current.close().catch(() => {
@@ -65,7 +107,7 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 				audioContextRef.current = null;
 			}
 		};
-	}, []);
+	}, [clearCountIn]);
 
 	useEffect(() => {
 		if (!isRunning) {
@@ -104,14 +146,16 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 		return () => clearInterval(interval);
 	}, [isRunning, bpm, beep, flash, setPosition]);
 
+	const isActive = isRunning || isCountingIn;
+
 	return (
 		<button
 			type='button'
 			className='Blinker flex justify-center items-center rounded-full w-10 h-10 p-1 hover:ring-1'
-			title={isRunning ? 'Stop Metronome' : 'Start Metronome'}
-			onMouseDown={() => setIsRunning(() => !isRunning)}
+			title={isActive ? 'Stop Metronome' : 'Start Metronome'}
+			onMouseDown={handleToggle}
 		>
-			{isRunning ? (
+			{isActive ? (
 				<div
 					className={clsx(
 						isLit ? 'bg-green-400' : 'bg-gray-200',
