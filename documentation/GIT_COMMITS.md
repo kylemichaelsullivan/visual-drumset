@@ -119,6 +119,17 @@ Use for updating existing files, features, or functionality.
 - `UPDATE: .VisualDisplay responsive`
 - `UPDATE: a11y updates`
 
+## AI Chat Workflow
+
+When an agent (or `/git-commits`) is asked to commit uncommitted work:
+
+1. **Inventory** — run `git status`, `git diff` / `git diff --staged`, and recent `git log` before planning commits.
+2. **Quality gate** — run `bun lint` and `bun run build`; fix until both exit 0. Do not commit while the gate is red. (This project does not yet ship an automated unit/E2E suite.)
+3. **Group first, stage later** — assign every modified/untracked file to exactly one logical commit group before staging. Do not split one file across commits. Prefer clear `TYPE` boundaries (`ADD` vs `UPDATE` vs `FIX`, etc.).
+4. **No secrets or scratch plans** — never commit `.env`, credentials, or temporary planning documents.
+5. **Commit per group** — for each group, `git add` only that group’s paths, then commit with `TYPE: Title Case Message` (optional body for complex changes).
+6. **Verify** — finish with a clean working tree (aside from ignored files) and summarize the commits created.
+
 ## Best Practices
 
 ### Message Length
