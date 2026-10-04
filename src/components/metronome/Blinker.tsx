@@ -14,41 +14,9 @@ type BlinkerProps = {
 function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 	const [isLit, setIsLit] = useState(false);
 	const [isCountingIn, setIsCountingIn] = useState(false);
-	const audioContextRef = useRef<AudioContext | null>(null);
 	const positionRef = useRef({ beat: 0, subdivision: 0 });
 	const countInTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
-	const { isMetronomeMuted, isAllMuted } = useSounds();
-
-	const getAudioContext = useCallback(() => {
-		if (!audioContextRef.current) {
-			audioContextRef.current = new AudioContext();
-		}
-		return audioContextRef.current;
-	}, []);
-
-	const beep = useCallback(() => {
-		if (isAllMuted || isMetronomeMuted) return;
-
-		try {
-			const context = getAudioContext();
-
-			// Resume context if suspended (required after user interaction)
-			if (context.state === 'suspended') {
-				context.resume().catch(() => {
-					// Silently fail if resume fails
-				});
-			}
-
-			const o = context.createOscillator();
-			o.type = 'sine';
-			o.frequency.value = 800;
-			o.connect(context.destination);
-			o.start();
-			o.stop(context.currentTime + 0.1);
-		} catch {
-			// Silently handle audio errors
-		}
-	}, [getAudioContext, isAllMuted, isMetronomeMuted]);
+	const { playMetronomeClick, prepareAudio } = useSounds();
 
 	const flash = useCallback(() => {
 		setIsLit(true);
@@ -56,6 +24,11 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 			setIsLit(false);
 		}, 100);
 	}, []);
+
+	const click = useCallback(() => {
+		playMetronomeClick();
+		flash();
+	}, [playMetronomeClick, flash]);
 
 	const clearCountIn = useCallback(() => {
 		countInTimersRef.current.forEach(clearTimeout);
@@ -72,8 +45,7 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 		// Four count-in clicks at the current tempo, then start playback.
 		for (let i = 0; i < 4; i++) {
 			const timer = setTimeout(() => {
-				beep();
-				flash();
+				click();
 			}, i * beatInterval);
 			countInTimersRef.current.push(timer);
 		}
@@ -84,28 +56,29 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 			setIsRunning(true);
 		}, 4 * beatInterval);
 		countInTimersRef.current.push(startTimer);
-	}, [bpm, beep, flash, clearCountIn, setIsRunning]);
+	}, [bpm, click, clearCountIn, setIsRunning]);
 
-	const handleToggle = useCallback(() => {
+	const handleToggle = useCallback(async () => {
 		if (isRunning || isCountingIn) {
 			clearCountIn();
 			setIsRunning(false);
 			return;
 		}
 
+		await prepareAudio();
 		startCountIn();
-	}, [isRunning, isCountingIn, clearCountIn, setIsRunning, startCountIn]);
+	}, [
+		isRunning,
+		isCountingIn,
+		clearCountIn,
+		setIsRunning,
+		prepareAudio,
+		startCountIn,
+	]);
 
 	useEffect(() => {
 		return () => {
 			clearCountIn();
-			// Clean up AudioContext on unmount
-			if (audioContextRef.current) {
-				audioContextRef.current.close().catch(() => {
-					// Silently handle cleanup errors
-				});
-				audioContextRef.current = null;
-			}
 		};
 	}, [clearCountIn]);
 
@@ -122,8 +95,7 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 		// Reset position when starting
 		positionRef.current = { beat: 0, subdivision: 0 };
 		setPosition(0, 0);
-		beep();
-		flash();
+		click();
 
 		const interval = setInterval(() => {
 			positionRef.current.subdivision++;
@@ -138,13 +110,12 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 			setPosition(positionRef.current.beat, positionRef.current.subdivision);
 
 			if (positionRef.current.subdivision === 0) {
-				beep();
-				flash();
+				click();
 			}
 		}, subdivisionInterval);
 
 		return () => clearInterval(interval);
-	}, [isRunning, bpm, beep, flash, setPosition]);
+	}, [isRunning, bpm, click, setPosition]);
 
 	const isActive = isRunning || isCountingIn;
 
@@ -153,7 +124,9 @@ function Blinker({ bpm, isRunning, setIsRunning, setPosition }: BlinkerProps) {
 			type='button'
 			className='Blinker flex justify-center items-center rounded-full w-10 h-10 p-1 hover:ring-1'
 			title={isActive ? 'Stop Metronome' : 'Start Metronome'}
-			onMouseDown={handleToggle}
+			onMouseDown={() => {
+				void handleToggle();
+			}}
 		>
 			{isActive ? (
 				<div

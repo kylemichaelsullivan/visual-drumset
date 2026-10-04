@@ -20,6 +20,33 @@ function createNoiseBuffer(duration: number, ctx: AudioContext): AudioBuffer {
 	return buf;
 }
 
+function playMetronomeClickInternal(ctx: AudioContext): void {
+	const t = ctx.currentTime;
+	const duration = 0.1;
+	const o = ctx.createOscillator();
+	const g = ctx.createGain();
+	o.type = 'sine';
+	o.frequency.value = 800;
+	g.gain.setValueAtTime(0, t);
+	g.gain.linearRampToValueAtTime(1, t + 0.005);
+	g.gain.exponentialRampToValueAtTime(0.001, t + duration);
+	o.connect(g).connect(ctx.destination);
+	o.start(t);
+	o.stop(t + duration);
+}
+
+function warmUpMetronomePath(ctx: AudioContext): void {
+	const t = ctx.currentTime;
+	const o = ctx.createOscillator();
+	const g = ctx.createGain();
+	g.gain.setValueAtTime(0, t);
+	o.type = 'sine';
+	o.frequency.value = 800;
+	o.connect(g).connect(ctx.destination);
+	o.start(t);
+	o.stop(t + 0.001);
+}
+
 function playNoise(
 	buffer: AudioBuffer,
 	filterFreq: number,
@@ -126,6 +153,8 @@ export function SoundsProvider({ children }: SoundsProviderProps) {
 				o.connect(g).connect(ctx.destination);
 				o.start();
 				o.stop(ctx.currentTime + 0.001);
+
+				warmUpMetronomePath(ctx);
 			} catch {
 				// Silently handle warm-up errors
 			}
@@ -187,6 +216,41 @@ export function SoundsProvider({ children }: SoundsProviderProps) {
 		},
 		[initializeNoiseBuffers]
 	);
+
+	const prepareAudio = useCallback(async () => {
+		try {
+			const ctx = getAudioContext();
+			if (ctx.state === 'suspended') {
+				await ctx.resume();
+			}
+			warmUpMetronomePath(ctx);
+		} catch {
+			// Silently handle audio errors
+		}
+	}, [getAudioContext]);
+
+	const playMetronomeClick = useCallback(() => {
+		if (isAllMuted || isMetronomeMuted) return;
+
+		try {
+			const ctx = getAudioContext();
+			if (ctx.state === 'suspended') {
+				ctx
+					.resume()
+					.then(() => {
+						playMetronomeClickInternal(ctx);
+					})
+					.catch(() => {
+						// Silently fail if resume fails
+					});
+				return;
+			}
+
+			playMetronomeClickInternal(ctx);
+		} catch {
+			// Silently handle audio errors
+		}
+	}, [getAudioContext, isAllMuted, isMetronomeMuted]);
 
 	const playSound = useCallback(
 		(drum: drums) => {
@@ -252,12 +316,14 @@ export function SoundsProvider({ children }: SoundsProviderProps) {
 	const value = useMemo(
 		() => ({
 			playSound,
+			playMetronomeClick,
+			prepareAudio,
 			isMetronomeMuted,
 			isAllMuted,
 			setIsMetronomeMuted,
 			setIsAllMuted,
 		}),
-		[playSound, isMetronomeMuted, isAllMuted]
+		[playSound, playMetronomeClick, prepareAudio, isMetronomeMuted, isAllMuted]
 	);
 
 	return (
