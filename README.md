@@ -22,7 +22,7 @@ Visual Drumset is a browser-based practice tool for **four-on-the-floor style dr
 
 ## Quick start
 
-Prerequisites: [Node.js](https://nodejs.org/) 18+ (or [Bun](https://bun.sh/) if you use it locally).
+Prerequisites: [Node.js](https://nodejs.org/) 24 (or [Bun](https://bun.sh/) if you use it locally). Vercel builds use Node.js 24.x.
 
 ```bash
 git clone <repository-url>

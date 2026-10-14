@@ -6,7 +6,7 @@ This guide will help you set up the Visual Drumset development environment and g
 
 ### Required Software
 
-1. **Node.js** (v18 or higher recommended)
+1. **Node.js** (v24, matching the Vercel build)
    - Download from [nodejs.org](https://nodejs.org/)
    - Verify installation: `node --version`
 
