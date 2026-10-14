@@ -13,7 +13,7 @@ Validate the working tree, fix until green, then commit every uncommitted change
 
 **Authoritative commit rules:** read and follow [`documentation/GIT_COMMITS.md`](../../../documentation/GIT_COMMITS.md) before grouping or committing.
 
-## Workflow checklist
+## Workflow Checklist
 
 ```
 Progress:
@@ -34,7 +34,7 @@ Run in parallel:
 
 Do not create plan files or temporary planning documents.
 
-## 2. Lint + build gate (loop until green)
+## 2. Lint + Build Gate (loop until green)
 
 Use **bun** only. This repo has no automated test suite yet (see Development Setup); the quality gate is lint + production build (includes `tsc -b`).
 
@@ -43,7 +43,7 @@ Use **bun** only. This repo has no automated test suite yet (see Development Set
 1. `bun lint`
 2. `bun run build`
 
-### Fix loop
+### Fix Loop
 
 1. Run both commands above.
 2. If anything fails:
@@ -56,7 +56,7 @@ Use **bun** only. This repo has no automated test suite yet (see Development Set
 
 Auto-fix safe formatting when helpful (`bun format` or `bun run lint:fix`), then re-run the gate.
 
-## 3. Group files for commits
+## 3. Group Files for Commits
 
 Follow the **AI Chat Workflow** in `documentation/GIT_COMMITS.md`:
 
@@ -66,9 +66,9 @@ Follow the **AI Chat Workflow** in `documentation/GIT_COMMITS.md`:
 4. **Logical groups** — related files that share one purpose go together; prefer clear `TYPE` boundaries (ADD vs UPDATE vs FIX, etc.).
 5. **No secrets** — do not commit `.env`, credentials, or similar; warn the user if present.
 
-## 4. Create commits
+## 4. Create Commits
 
-### Message format (required)
+### Message Format (required)
 
 ```
 TYPE: Commit Message in Title Case
@@ -82,7 +82,7 @@ Rules:
 - Concise and specific (aim ≤ 50 characters for the subject)
 - Optional body with bullet details for complex changes
 
-### Git safety
+### Git Safety
 
 - Never update git config
 - Never `--no-verify` / skip hooks unless the user explicitly asks
@@ -91,7 +91,7 @@ Rules:
 - Do not amend unless the user’s usual amend conditions are met
 - If a hook rejects a commit, fix and create a **new** commit (do not amend a failed commit)
 
-### Per-commit sequence
+### Per-Commit Sequence
 
 For each group, in dependency-friendly order:
 
@@ -113,7 +113,7 @@ EOF
 - `git status` — expect a clean working tree (aside from ignored files)
 - Briefly summarize commits created (hash + subject)
 
-## Out of scope
+## Out of Scope
 
 - Pushing, PRs, version bumps, and changelog generation unless the user asks separately
 - Leaving ungrouped uncommitted files “for later”
