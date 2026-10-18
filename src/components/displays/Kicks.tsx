@@ -23,7 +23,7 @@ function Kicks() {
 						className={clsx(
 							'Kick',
 							getBackgroundClass(j),
-							'text-center py-2',
+							'py-2',
 							i === currentBeat && j === currentSubdivision && 'active'
 						)}
 						key={`${i}-${getSubdivision(j)}`}

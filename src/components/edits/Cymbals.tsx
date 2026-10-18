@@ -19,21 +19,24 @@ function Cymbals() {
 	return (
 		<div
 			className={clsx(
-				'Cymbals grid py-4',
+				'Cymbals grid',
 				isDisplaying16ths ? 'grid-cols-8 sm:grid-cols-16' : 'grid-cols-8'
 			)}
 		>
 			{cymbals.map((count, i) =>
 				count.map((division, j) => (
-					<input
-						type='checkbox'
-						className='Cymbal'
-						checked={division}
+					<div
+						className='Cymbal flex justify-center items-center py-2'
 						key={`cymbal-${i}-${getSubdivision(j)}`}
-						title={`Cymbal: ${i + 1}${getSubdivision(j)}`}
-						id={`cymbal-${i}-${j}`}
-						onChange={(e) => changeCymbals(e.target.id)}
-					/>
+					>
+						<input
+							type='checkbox'
+							checked={division}
+							title={`Cymbal: ${i + 1}${getSubdivision(j)}`}
+							id={`cymbal-${i}-${j}`}
+							onChange={(e) => changeCymbals(e.target.id)}
+						/>
+					</div>
 				))
 			)}
 		</div>

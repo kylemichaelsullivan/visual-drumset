@@ -19,21 +19,24 @@ function Kicks() {
 	return (
 		<div
 			className={clsx(
-				'Kicks grid py-4',
+				'Kicks grid',
 				isDisplaying16ths ? 'grid-cols-8 sm:grid-cols-16' : 'grid-cols-8'
 			)}
 		>
 			{kicks.map((count, i) =>
 				count.map((division, j) => (
-					<input
-						type='checkbox'
-						className='Kick'
-						checked={division}
+					<div
+						className='Kick flex justify-center items-center py-2'
 						key={`kick-${i}${getSubdivision(j)}`}
-						title={`Kick: ${i + 1}${getSubdivision(j)}`}
-						id={`kick-${i}-${j}`}
-						onChange={(e) => changeKicks(e.target.id)}
-					/>
+					>
+						<input
+							type='checkbox'
+							checked={division}
+							title={`Kick: ${i + 1}${getSubdivision(j)}`}
+							id={`kick-${i}-${j}`}
+							onChange={(e) => changeKicks(e.target.id)}
+						/>
+					</div>
 				))
 			)}
 		</div>

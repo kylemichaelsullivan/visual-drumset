@@ -19,21 +19,24 @@ function Snares() {
 	return (
 		<div
 			className={clsx(
-				'Snares grid py-4',
+				'Snares grid',
 				isDisplaying16ths ? 'grid-cols-8 sm:grid-cols-16' : 'grid-cols-8'
 			)}
 		>
 			{snares.map((count, i) =>
 				count.map((division, j) => (
-					<input
-						type='checkbox'
-						className='Snare'
-						checked={division}
+					<div
+						className='Snare flex justify-center items-center py-2'
 						key={`snare-${i}-${getSubdivision(j)}`}
-						title={`Snare: ${i + 1}${getSubdivision(j)}`}
-						id={`snare-${i}-${j}`}
-						onChange={(e) => changeSnares(e.target.id)}
-					/>
+					>
+						<input
+							type='checkbox'
+							checked={division}
+							title={`Snare: ${i + 1}${getSubdivision(j)}`}
+							id={`snare-${i}-${j}`}
+							onChange={(e) => changeSnares(e.target.id)}
+						/>
+					</div>
 				))
 			)}
 		</div>

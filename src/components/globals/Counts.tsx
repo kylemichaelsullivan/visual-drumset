@@ -18,7 +18,7 @@ function Counts() {
 				<Fragment key={`beat-${beatIndex + 1}`}>
 					<div
 						className={clsx(
-							'Count text-center',
+							'Count',
 							beatIndex === currentBeat && 0 === currentSubdivision
 								? 'text-gray-900 font-bold'
 								: 'text-gray-900'
@@ -28,7 +28,7 @@ function Counts() {
 					</div>
 					<div
 						className={clsx(
-							'Count text-center',
+							'Count',
 							beatIndex === currentBeat && 1 === currentSubdivision
 								? 'text-gray-900 font-bold'
 								: 'text-gray-300'
@@ -38,7 +38,7 @@ function Counts() {
 					</div>
 					<div
 						className={clsx(
-							'Count text-center',
+							'Count',
 							beatIndex === currentBeat && 2 === currentSubdivision
 								? 'text-gray-900 font-bold'
 								: 'text-gray-500'
@@ -48,7 +48,7 @@ function Counts() {
 					</div>
 					<div
 						className={clsx(
-							'Count text-center',
+							'Count',
 							beatIndex === currentBeat && 3 === currentSubdivision
 								? 'text-gray-900 font-bold'
 								: 'text-gray-300'
