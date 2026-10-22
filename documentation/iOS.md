@@ -35,7 +35,7 @@ In edit mode, bare `<input type="checkbox">` elements were direct CSS Grid child
 
 1. **Same cell structure in edit and display** — Each subdivision is a full-width cell (`.Cymbal` / `.Snare` / `.Kick`) that flex-centers its content. Edit mode wraps the checkbox; display mode wraps the drum icon.
 2. **Shared track CSS** in `src/index.css`:
-   - Grids (`.Counts`, `.Cymbals`, `.Snares`, `.Kicks`): `justify-items: center` and `align-items: center`
+   - Grids (`.Counts`, `.Cymbals`, `.Snares`, `.Kicks`): `justify-items: stretch` and `align-items: stretch` (continuous column backgrounds); center icons/checkboxes with flex on each cell
    - Cells: `display: flex`, centered content, `width: 100%`, `min-width: 0`, `box-sizing: border-box`
 3. **16ths visibility** — When even columns are shown (`sm` and not `.hide-16ths`), use `display: flex` (not `display: block`) so centering is preserved.
 
